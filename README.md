@@ -81,7 +81,7 @@ kakashi.error("Something went wrong", component="startup")
 ### Module loggers (structured)
 
 ```python
-from mylogs import get_structured_logger
+from kakashi import get_structured_logger
 
 app_logger = get_structured_logger("myapp")
 db_logger = get_structured_logger("myapp.database")
@@ -94,7 +94,7 @@ api_logger.info("Endpoint called", route="/users")
 ### Request/user/custom context
 
 ```python
-from mylogs import (
+from kakashi import (
     get_structured_logger,
     set_request_context,
     set_user_context,
@@ -114,14 +114,14 @@ clear_request_context()
 
 ```python
 from fastapi import FastAPI
-import mylogs
+import kakashi
 
 app = FastAPI()
-mylogs.setup_fastapi(app, service_name="my-api", environment="production")
+kakashi.setup_fastapi(app, service_name="my-api", environment="production")
 
 @app.get("/")
 async def root():
-    mylogs.info("Root endpoint accessed")
+    kakashi.info("Root endpoint accessed")
     return {"message": "Hello World"}
 ```
 
@@ -139,7 +139,7 @@ TIMESTAMP | LEVEL | MODULE | ACCESS | IP | MESSAGE
 ### Enable Bright Colors
 
 ```python
-from mylogs import enable_bright_colors
+from kakashi import enable_bright_colors
 
 enable_bright_colors()
 ```
@@ -147,7 +147,7 @@ enable_bright_colors()
 ### Disable All Colors
 
 ```python
-from mylogs import disable_colors
+from kakashi import disable_colors
 
 disable_colors()
 ```
@@ -155,7 +155,7 @@ disable_colors()
 ### Custom Color Configuration
 
 ```python
-from mylogs import configure_colors
+from kakashi import configure_colors
 
 # Bright console colors, plain file logs
 configure_colors(bright_colors=True, colored_file_logs=False)
@@ -166,15 +166,15 @@ configure_colors(bright_colors=True, colored_file_logs=False)
 ### Development Setup
 
 ```python
-import mylogs
-mylogs.setup("development")  # Verbose console output
+import kakashi
+kakashi.setup("development")  # Verbose console output
 ```
 
 ### Production Setup
 
 ```python
-import mylogs
-mylogs.setup("production", service="user-api", version="2.1.0")
+import kakashi
+kakashi.setup("production", service="user-api", version="2.1.0")
 ```
 
 ## 📁 Log File Organization
@@ -194,7 +194,7 @@ logs/
 ### Log Level Configuration
 
 ```python
-from mylogs import set_log_level
+from kakashi import set_log_level
 
 set_log_level('DEBUG')  # Set global log level
 ```
@@ -202,7 +202,7 @@ set_log_level('DEBUG')  # Set global log level
 ### Console and File Color Settings
 
 ```python
-from mylogs import set_console_colors, set_file_colors
+from kakashi import set_console_colors, set_file_colors
 
 set_console_colors(bright=True)        # Bright console colors
 set_file_colors(enabled=True, bright=False)  # Normal file colors
@@ -211,7 +211,7 @@ set_file_colors(enabled=True, bright=False)  # Normal file colors
 ### Request Context Management
 
 ```python
-from mylogs import set_request_context, clear_request_context
+from kakashi import set_request_context, clear_request_context
 
 # Set context
 set_request_context("192.168.1.100", "GET /api/data")
@@ -228,47 +228,47 @@ clear_request_context()
 
 ```python
 from fastapi import FastAPI
-import mylogs
+import kakashi
 
 app = FastAPI()
-mylogs.setup_fastapi(app)
+kakashi.setup_fastapi(app)
 ```
 
 ### Flask (one-line enterprise setup)
 
 ```python
 from flask import Flask
-import mylogs
+import kakashi
 
 app = Flask(__name__)
-mylogs.setup_flask(app)
+kakashi.setup_flask(app)
 
 @app.route("/")
 def index():
-    mylogs.info("Flask index hit")
+    kakashi.info("Flask index hit")
     return {"ok": True}
 
 ### Django (URL patterns provided)
 
-In Django, call `mylogs.setup_django()` in your startup (e.g., `apps.py`), then include the provided health/metrics URLs from `mylogs.integrations.django_integration.urlpatterns`.
+In Django, call `kakashi.setup_django()` in your startup (e.g., `apps.py`), then include the provided health/metrics URLs from `kakashi.integrations.django_integration.urlpatterns`.
 
 ## 🧪 Running the Demo
 
 After installation, you can run the built-in demo:
 
 ```bash
-mylogs-demo
+kakashi-demo
 ```
 
 This will create example log files in the `logs/` directory demonstrating all features.
 
 ## 🧭 Deprecations and Compatibility
 
-- The legacy singleton-style API is maintained for compatibility but will be deprecated in future versions. Prefer the functional API exposed via `mylogs.core` and the simple top-level helpers in `mylogs`.
+- The legacy singleton-style API is maintained for compatibility but will be deprecated in future versions. Prefer the functional API exposed via `kakashi.core` and the simple top-level helpers in `kakashi`.
 - Old middleware names like `IPLoggingMiddleware` and functions like `create_ip_logging_middleware`, `setup_fastapi_logging`, `init_flask_logging`, and legacy Django aliases now map to the new enterprise integrations and may be removed in the future. Use:
-  - FastAPI: `mylogs.setup_fastapi(app, ...)`
-  - Flask: `mylogs.setup_flask(app, ...)`
-  - Django: `mylogs.setup_django(...)`
+  - FastAPI: `kakashi.setup_fastapi(app, ...)`
+  - Flask: `kakashi.setup_flask(app, ...)`
+  - Django: `kakashi.setup_django(...)`
 
 See optional extras in installation for `fastapi`, `flask`, `django`, `web`, `performance`, and `all` bundles.
 
@@ -326,4 +326,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, please open an issue on the [GitHub repository](https://github.com/nccf-project/mylogs/issues).
+For support, please open an issue on the [GitHub repository](https://github.com/IntegerAlex/kakashi/issues).
