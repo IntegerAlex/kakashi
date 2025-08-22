@@ -1,0 +1,153 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kakashi"
+version = "0.1.0"
+description = "High-performance logging utility for Python applications with advanced features"
+readme = "README.md"
+requires-python = ">=3.7"
+license = "LGPL-2.1"
+authors = [
+    {name = "Akshat Kotpalliwar", email = "akshatkot@gmail.com"}
+]
+maintainers = [
+    {name = "Akshat Kotpalliwar", email = "akshatkot@gmail.com"}
+]
+keywords = ["logging", "logger", "fastapi", "middleware", "colored-logs", "performance", "singleton", "rotation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Logging",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
+]
+dependencies = [
+    # Zero dependencies for vanilla experience
+]
+
+[project.optional-dependencies]
+# Web framework integrations
+fastapi = ["fastapi>=0.68.0", "starlette>=0.14.0"]
+flask = ["flask>=1.0.0"]
+django = ["django>=3.0.0"]
+
+# All web frameworks
+web = ["fastapi>=0.68.0", "starlette>=0.14.0", "flask>=1.0.0", "django>=3.0.0"]
+
+# GUI application dependencies (optional examples)
+gui = ["tkinter;python_version>='3.0'"]
+
+# Development dependencies
+dev = [
+    "pytest>=6.0",
+    "pytest-asyncio>=0.18.0",
+    "black>=21.0.0",
+    "flake8>=3.8.0",
+    "mypy>=0.910",
+    "pre-commit>=2.15.0",
+    "build>=0.8.0",
+    "twine>=4.0.0",
+]
+
+# Performance optimization dependencies
+performance = [
+    "orjson>=3.8.0",
+    "uvloop>=0.17.0;sys_platform!='win32'",  # High-performance event loop
+]
+
+# All dependencies for complete functionality
+all = [
+    "fastapi>=0.68.0", 
+    "starlette>=0.14.0", 
+    "flask>=1.0.0", 
+    "django>=3.0.0",
+    "orjson>=3.8.0",
+    "uvloop>=0.17.0;sys_platform!='win32'",
+]
+
+[project.urls]
+Homepage = "https://github.com/IntegerAlex/kakashi"
+Repository = "https://github.com/IntegerAlex/kakashi"
+Documentation = "https://github.com/IntegerAlex/kakashi/wiki"
+"Bug Reports" = "https://github.com/IntegerAlex/kakashi/issues"
+
+[project.scripts]
+# Basic examples
+kakashi-demo = "kakashi.examples.basic_usage:main"
+kakashi-basic = "kakashi.examples.basic_usage:main"
+
+# Framework examples
+kakashi-web = "kakashi.examples.web_framework_examples:run_all_examples"
+
+# Application type examples  
+kakashi-gui = "kakashi.examples.gui_application_example:gui_example"
+kakashi-cli = "kakashi.examples.cli_application_example:cli_example"
+
+[tool.setuptools]
+packages = ["kakashi", "kakashi.core", "kakashi.integrations", "kakashi.examples"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+kakashi = ["*.py"]
+"kakashi.core" = ["*.py"]
+"kakashi.integrations" = ["*.py"] 
+"kakashi.examples" = ["*.py"]
+
+[tool.black]
+line-length = 88
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--disable-warnings",
+    "-v"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
