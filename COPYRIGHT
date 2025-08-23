@@ -1,8 +1,8 @@
-COPYRIGHT NOTICE
+# COPYRIGHT NOTICE
 
 Copyright (c) 2025 Akshat Kotpalliwar. All rights reserved.
 
-This software and associated documentation files (the "Software") are the 
+This software and associated documentation files (the "Software") are the
 intellectual property of Akshat Kotpalliwar.
 
 LICENSE INFORMATION:
@@ -18,11 +18,11 @@ PERMISSIONS AND RESTRICTIONS:
 
 AUTHOR INFORMATION:
 Author: Akshat Kotpalliwar
-Email: akshatkot@gmail.com
+Email: <akshatkot@gmail.com>
 Project: kakashi
-Repository: https://github.com/IntegerAlex/kakashi
+Repository: <https://github.com/IntegerAlex/kakashi>
 
-For licensing questions or permissions beyond the scope of the LGPL-2.1 license, 
+For licensing questions or permissions beyond the scope of the LGPL-2.1 license,
 please contact the copyright holder at the email address provided above.
 
 This copyright notice applies to all source code, documentation, configuration files,
