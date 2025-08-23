@@ -2,6 +2,10 @@
 requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
 build-backend = "setuptools.build_meta"
 
+# COPYRIGHT NOTICE
+# Copyright (c) 2024 Akshat Kotpalliwar. All rights reserved.
+# See COPYRIGHT file for full copyright information and LICENSE file for license terms.
+
 [project]
 name = "kakashi"
 version = "0.1.0"
