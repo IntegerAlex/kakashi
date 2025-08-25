@@ -319,12 +319,6 @@ The core is a functional, pipeline-based design with immutable configuration:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- Built for the NCCF Project
-- Inspired by the need for production-ready logging solutions
-- Thanks to the FastAPI and Starlette communities for middleware inspiration
-
 ## 📞 Support
 
 For support, please open an issue on the [GitHub repository](https://github.com/IntegerAlex/kakashi/issues).
