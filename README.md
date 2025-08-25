@@ -3,6 +3,7 @@
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/kakashi.svg)](https://badge.fury.io/py/kakashi)
+[![PyPI Downloads](https://static.pepy.tech/badge/kakashi)](https://pepy.tech/projects/kakashi)
 
 Enterprise-grade logging for Python with a modern functional pipeline, structured logging, and first-class FastAPI/Flask/Django integrations. Backward-compatible aliases are kept, but the functional API is now the recommended path.
 
