@@ -8,5 +8,5 @@ This is the main package entry point.
 from kakashi import *
 
 # Re-export the version and author
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Akshat Kotpalliwar"

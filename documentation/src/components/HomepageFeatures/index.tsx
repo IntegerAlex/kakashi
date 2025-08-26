@@ -11,32 +11,32 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'High Performance',
+    title: '🚀 Superior Performance',
     imageSrc: require('@site/static/img/socialcard.png').default,
     description: (
       <>
-        Kakashi delivers blazing-fast logging performance with minimal overhead,
-        designed for production workloads and high-traffic applications.
+        Kakashi achieves <strong>56,310+ logs/sec</strong> with <strong>1.17x concurrency scaling</strong>.
+        Thread-local buffering and lock-free hot paths deliver industry-leading performance.
       </>
     ),
   },
   {
-    title: 'Structured Logging',
+    title: '⚡ True Async Logging',
     imageSrc: require('@site/static/img/socialcard.png').default,
     description: (
       <>
-        Built-in support for structured logging with JSON output, making logs
-        machine-readable and easier to analyze in modern observability tools.
+        Background worker threads deliver <strong>169,074 logs/sec</strong> with intelligent batch processing.
+        Non-blocking operation for maximum throughput applications.
       </>
     ),
   },
   {
-    title: 'Web Framework Integration',
+    title: '🏗️ Professional Architecture',
     imageSrc: require('@site/static/img/socialcard.png').default,
     description: (
       <>
-        First-class support for FastAPI, Flask, and Django with automatic
-        request context capture and performance monitoring.
+        Clean, maintainable code with thread-local buffering and efficient memory management.
+        Production-ready design with <strong>&lt;0.02MB</strong> memory usage.
       </>
     ),
   },

@@ -5,37 +5,35 @@ title: Architecture
 
 ## Core Design Principles
 
-Kakashi implements a **functional, pipeline-based architecture** with immutable configuration, eliminating hidden global state and providing predictable behavior.
+Kakashi implements a **high-performance, thread-safe architecture** optimized for production workloads with minimal contention and maximum throughput.
 
-### Functional Pipeline Architecture
+### High-Performance Architecture
 
-The logging system processes records through a series of **pure functions**:
+The logging system is designed around **performance-first principles**:
 
 ```python
-LogRecord → Enrichers → Filters → Formatter → Writers
+Fast Level Check → Thread-Local Buffer → Batch Processing → Optimized I/O
 ```
 
-#### Pipeline Components
+#### Core Components
 
-1. **Enrichers** (`Callable[[LogRecord], LogRecord]`)
-   - Add context and metadata to log records
-   - Stateless transformations (thread-safe)
-   - Examples: timestamp enricher, context enricher, source location enricher
+1. **Logger** (`Logger`)
+   - Thread-local buffering for minimal contention
+   - Pre-computed level checks for fast filtering
+   - Batch processing for efficient I/O operations
+   - Direct `sys.stderr.write` for maximum performance
 
-2. **Filters** (`Callable[[LogRecord], bool]`)
-   - Determine if a record should be processed
-   - Level filtering, module filtering, custom business logic
-   - Short-circuit evaluation for performance
+2. **AsyncLogger** (`AsyncLogger`)
+   - Background worker thread for non-blocking operation
+   - Queue-based message handling with backpressure protection
+   - Batch processing for optimal throughput
+   - Graceful shutdown with proper cleanup
 
-3. **Formatters** (`Callable[[LogRecord], str]`)
-   - Convert log records to output strings
-   - JSON, compact text, or custom formats
-   - Optimized for minimal allocations
-
-4. **Writers** (`Callable[[str], None]`)
-   - Send formatted logs to destinations
-   - Console, files, network endpoints
-   - Error isolation (writer failures don't crash app)
+3. **LogFormatter** (`LogFormatter`)
+   - Optimized string formatting with minimal allocations
+   - Structured field serialization as `key=value` pairs
+   - Unified path for simple and structured logging
+   - Memory-efficient string operations
 
 ### Immutable Configuration
 

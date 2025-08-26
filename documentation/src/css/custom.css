@@ -61,6 +61,51 @@ html[data-theme] {
   position: relative;
 }
 
+/* Performance Metrics */
+.hero__performance {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.performance-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(229, 57, 57, 0.1);
+  border: 2px solid rgba(229, 57, 57, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.performance-metric:hover {
+  background: rgba(229, 57, 57, 0.15);
+  border-color: rgba(229, 57, 57, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(229, 57, 57, 0.2);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #E53939;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: #c9ced6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
 .hero--primary::before {
   content: '';
   position: absolute;

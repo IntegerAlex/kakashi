@@ -1,4 +1,7 @@
-# Kakashi - Professional High-Performance Logging Library
+<div align="center">
+  <img src="documentation/static/img/kakashi-logo.png" alt="Kakashi Logo" width="200" height="200">
+  <h1>Kakashi - Professional High-Performance Logging Library</h1>
+</div>
 
 A modern, high-performance logging library designed for production applications that require both high throughput and excellent concurrency scaling.
 

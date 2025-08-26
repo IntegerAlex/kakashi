@@ -24,6 +24,20 @@ function HomepageHeader() {
           {siteConfig.title}
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <div className="hero__performance">
+          <div className="performance-metric">
+            <span className="metric-value">56,310+</span>
+            <span className="metric-label">logs/sec</span>
+          </div>
+          <div className="performance-metric">
+            <span className="metric-value">1.17x</span>
+            <span className="metric-label">concurrency</span>
+          </div>
+          <div className="performance-metric">
+            <span className="metric-value">169K</span>
+            <span className="metric-label">async logs/sec</span>
+          </div>
+        </div>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"

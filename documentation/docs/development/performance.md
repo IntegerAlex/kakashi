@@ -5,52 +5,58 @@ title: Performance Guide
 
 ## Performance Characteristics
 
-Kakashi is designed for high-performance logging with minimal overhead. Understanding its performance characteristics helps optimize your application.
+Kakashi is designed for **production-grade high-performance logging** with minimal overhead and superior concurrency scaling. Understanding its performance characteristics helps optimize your application.
 
-### Benchmarks
+### 🏆 Current Performance Benchmarks
 
 #### Throughput Benchmarks
 
-| Configuration | Throughput (logs/sec) | Latency (μs) | Memory Usage |
-|--------------|----------------------|--------------|--------------|
-| Simple console | 150,000 | 6.7 | Low |
-| JSON + file | 80,000 | 12.5 | Medium |
-| Async + network | 200,000 | 5.0 | Medium |
-| Full pipeline | 60,000 | 16.7 | High |
+| Configuration | Throughput (logs/sec) | Concurrency Scaling | Memory Usage | Notes |
+|--------------|----------------------|-------------------|--------------|-------|
+| **Kakashi Basic** | **56,310** | N/A | <0.02MB | **3.1x faster than stdlib** |
+| **Kakashi Concurrent** | **66,116** | **1.17x** | <0.02MB | **Adding threads improves performance** |
+| **Kakashi Async** | **169,074** | N/A | <0.02MB | **9.3x faster than stdlib** |
+| Standard Library | 18,159 | 0.59x | <0.01MB | Python built-in |
+| Structlog | 12,181 | 0.47x | <0.01MB | Production ready |
+| Loguru | 14,690 | 0.46x | <0.01MB | Feature rich |
 
 #### Memory Usage
 
 | Component | Memory per log | Notes |
 |-----------|---------------|-------|
-| LogRecord | 200-400 bytes | Depends on context size |
-| JSON formatting | 100-200 bytes | Temporary allocation |
-| Async buffer | 50KB-2MB | Configurable buffer size |
+| LogRecord | 150-300 bytes | Optimized for minimal allocation |
+| Thread-local buffer | 1-2KB | Efficient batch processing |
+| Async queue | <0.02MB | Background worker optimization |
+| Total overhead | <0.05MB | Production-ready memory footprint |
 
 ### Hot Path Optimization
 
-The logging hot path is optimized for minimal CPU cycles:
+The logging hot path is optimized for **maximum performance** with minimal CPU cycles:
 
 ```python
-def process(self, record: LogRecord) -> None:
-    # 1. Fast level check (1-2 CPU cycles)
-    if record.level < self.config.min_level:
+def _log(self, level: int, message: str, fields: Optional[Dict[str, Any]] = None) -> None:
+    # 1. Fast level check (1-2 CPU cycles) - pre-computed threshold
+    if level < self._min_level:
         return
     
-    # 2. Apply enrichers (minimal allocations)
-    enriched_record = record
-    for enricher in self.config.enrichers:
-        enriched_record = enricher(enriched_record)
+    # 2. Format message with minimal allocations
+    formatted = self._formatter.format_message(level, self.name, message, fields)
     
-    # 3. Apply filters (short-circuit evaluation)
-    for filter_func in self.config.filters:
-        if not filter_func(enriched_record):
-            return
+    # 3. Thread-local batch accumulation (no locks)
+    self._thread_local.batch.append(formatted)
     
-    # 4. Format and write (optimized I/O)
-    formatted_message = self.config.formatter(enriched_record)
-    for writer in self.config.writers:
-        writer(formatted_message)
+    # 4. Batch flush when threshold reached (efficient I/O)
+    if len(self._thread_local.batch) >= self._batch_size:
+        self._flush_batch(self._thread_local.batch)
+        self._thread_local.batch.clear()
 ```
+
+#### Key Performance Features
+
+- **Pre-computed level thresholds**: Eliminates runtime level calculations
+- **Thread-local buffering**: Zero contention between threads
+- **Batch processing**: Reduces I/O operations by 10-100x
+- **Direct sys.stderr.write**: Bypasses Python's buffering overhead
 
 ### Performance Best Practices
 

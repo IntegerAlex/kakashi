@@ -3,100 +3,174 @@ id: core
 title: Core API Reference
 ---
 
-## Setup Functions
+## 🚀 High-Performance Logging API
 
-### `setup(environment=None, service=None, version=None, **kwargs)`
-
-Intelligent one-line setup for Kakashi with automatic environment detection.
-
-```python
-def setup(
-    environment: Optional[str] = None,
-    service: Optional[str] = None,
-    version: Optional[str] = None,
-    log_directory: Optional[Union[str, Path]] = None,
-    level: Optional[Union[str, LogLevel]] = None,
-    structured: bool = True,
-    async_logging: Optional[bool] = None,
-    console_output: bool = True,
-    file_output: bool = True,
-    **kwargs: Any
-) -> None
-```
-
-**Parameters:**
-- `environment`: Auto-detected if None. Options: 'development', 'production', 'testing'
-- `service`: Service name (auto-detected from `__main__` if None)
-- `version`: Service version (added to all logs)
-- `log_directory`: Where to write log files (auto-configured if None)
-- `level`: Log level (auto-configured based on environment if None)
-- `structured`: Use structured JSON logging (recommended: True)
-- `async_logging`: Use async I/O (auto-configured for production)
-- `console_output`: Enable console logging
-- `file_output`: Enable file logging
-
-**Examples:**
-```python
-# Simplest setup
-kakashi.setup()
-
-# Production setup
-kakashi.setup("production", service="user-api", version="2.1.0")
-
-# High-performance setup
-kakashi.setup("production", async_logging=True, level="INFO")
-```
-
-### `setup_logging(environment, **kwargs)`
-
-Advanced environment configuration for power users.
-
-```python
-def setup_logging(
-    environment: str,
-    service_name: Optional[str] = None,
-    version: Optional[str] = None,
-    log_directory: Optional[Path] = None,
-    enable_async_io: bool = False,
-    **kwargs: Any
-) -> None
-```
+Kakashi provides a modern, high-performance logging API designed for production applications with superior throughput and concurrency scaling.
 
 ## Logger Factory Functions
 
-### `get_logger(name)`
+### `get_logger(name, min_level=20)`
 
-Get a traditional logger instance (compatibility mode).
-
-```python
-def get_logger(name: str) -> Logger
-```
-
-### `get_structured_logger(name)`
-
-Get a structured logger instance (recommended).
+Get a high-performance synchronous logger instance.
 
 ```python
-def get_structured_logger(name: str) -> StructuredLogger
+def get_logger(name: str, min_level: int = 20) -> Logger
 ```
 
-**Returns:** Logger with structured field support:
+**Returns:** A `Logger` instance optimized for high throughput with thread-local buffering.
+
+**Parameters:**
+- `name`: Logger name (typically `__name__`)
+- `min_level`: Minimum log level (default: 20 = INFO)
+
+**Example:**
 ```python
-logger = get_structured_logger(__name__)
-logger.info("User created", user_id=42, role="admin")
+from kakashi import get_logger
+
+logger = get_logger(__name__)
+logger.info("Application started", version="1.0.0")
+logger.warning("Configuration warning", config_file="app.conf")
+logger.error("Database connection failed", db="primary", error="timeout")
 ```
 
-### `get_request_logger(name)`
+### `get_async_logger(name, min_level=20)`
 
-Get a logger with request context helpers.
+Get a high-performance asynchronous logger instance.
 
 ```python
-def get_request_logger(name: str) -> RequestLogger
+def get_async_logger(name: str, min_level: int = 20) -> AsyncLogger
 ```
 
-### `get_performance_logger(name)`
+**Returns:** An `AsyncLogger` instance optimized for maximum throughput with background processing.
 
-Get a logger optimized for high-throughput scenarios.
+**Parameters:**
+- `name`: Logger name (typically `__name__`)
+- `min_level`: Minimum log level (default: 20 = INFO)
+
+**Example:**
+```python
+from kakashi import get_async_logger
+
+async_logger = get_async_logger(__name__)
+async_logger.info("High-volume logging", user_id=123, action="login")
+async_logger.warning("Rate limit approaching", requests_per_min=95)
+```
+
+## Core Classes
+
+### `Logger`
+
+High-performance synchronous logger with thread-local buffering.
+
+```python
+class Logger:
+    def __init__(self, name: str, min_level: int = 20)
+    
+    def debug(self, message: str, **fields: Any) -> None
+    def info(self, message: str, **fields: Any) -> None
+    def warning(self, message: str, **fields: Any) -> None
+    def error(self, message: str, **fields: Any) -> None
+    def critical(self, message: str, **fields: Any) -> None
+    def exception(self, message: str, **fields: Any) -> None
+    
+    def flush(self) -> None
+```
+
+**Key Features:**
+- Thread-local buffering for minimal contention
+- Pre-computed level checks for fast filtering
+- Batch processing for efficient I/O
+- Direct `sys.stderr.write` for maximum performance
+
+### `AsyncLogger`
+
+High-performance asynchronous logger with background processing.
+
+```python
+class AsyncLogger:
+    def __init__(self, name: str, min_level: int = 20)
+    
+    def debug(self, message: str, **fields: Any) -> None
+    def info(self, message: str, **fields: Any) -> None
+    def warning(self, message: str, **fields: Any) -> None
+    def error(self, message: str, **fields: Any) -> None
+    def critical(self, message: str, **fields: Any) -> None
+    def exception(self, message: str, **fields: Any) -> None
+    
+    def flush(self) -> None
+```
+
+**Key Features:**
+- Background worker thread for non-blocking operation
+- Queue-based message handling with backpressure protection
+- Batch processing for optimal throughput
+- Graceful shutdown with proper cleanup
+
+## Utility Functions
+
+### `clear_logger_cache()`
+
+Clear the logger cache (useful for testing and memory management).
+
+```python
+def clear_logger_cache() -> None
+```
+
+**Example:**
+```python
+from kakashi import clear_logger_cache
+
+# Clear all cached loggers
+clear_logger_cache()
+```
+
+### `shutdown_async_logging()`
+
+Gracefully shutdown async logging and wait for background workers to complete.
+
+```python
+def shutdown_async_logging() -> None
+```
+
+**Example:**
+```python
+from kakashi import shutdown_async_logging
+
+# Graceful shutdown
+shutdown_async_logging()
+```
+
+## Log Levels
+
+Kakashi uses standard Python logging levels:
+
+```python
+import logging
+
+# Standard levels (compatible with Python's logging module)
+DEBUG = 10      # Detailed information for debugging
+INFO = 20       # General information about program execution
+WARNING = 30    # Warning messages for potentially problematic situations
+ERROR = 40      # Error messages for serious problems
+CRITICAL = 50   # Critical error messages for fatal errors
+```
+
+## Performance Characteristics
+
+### Thread Safety
+- **Zero Contention**: Thread-local buffering eliminates lock contention
+- **Batch Processing**: Efficient I/O with configurable batch sizes
+- **Pre-computed Checks**: Fast level filtering with minimal overhead
+
+### Memory Efficiency
+- **Buffer Pooling**: Reusable buffers for consistent memory usage
+- **Structured Fields**: Efficient serialization as `key=value` pairs
+- **Minimal Allocations**: Optimized for production workloads
+
+### Async Performance
+- **Background Processing**: Non-blocking operation with worker threads
+- **Queue Management**: Intelligent backpressure handling
+- **Batch Optimization**: Maximum throughput through efficient batching
 
 ```python
 def get_performance_logger(name: str) -> PerformanceLogger
