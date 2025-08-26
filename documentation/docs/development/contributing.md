@@ -1,9 +1,43 @@
 ---
 id: contributing
-title: Contributing
+title: Contributing to Kakashi
 ---
 
-## Development Setup
+## 🚀 Welcome Contributors!
+
+Thank you for your interest in contributing to Kakashi! This guide will help you understand the codebase, development workflow, and how to make meaningful contributions.
+
+## 🏗️ Understanding the Codebase
+
+### Project Structure
+
+```
+kakashi/
+├── kakashi/                    # Main package
+│   ├── __init__.py            # Public API exports
+│   └── core/                  # Core implementation
+│       ├── logger.py          # Main Logger and AsyncLogger classes
+│       ├── records.py         # LogRecord, LogContext, LogLevel
+│       ├── config.py          # Configuration system
+│       └── pipeline.py        # Pipeline processing components
+├── performance_tests/          # Performance validation suite
+│   └── validate_performance.py
+├── documentation/              # Docusaurus documentation site
+├── tests/                     # Test suite
+├── pyproject.toml            # Package configuration
+└── README.md                 # Project overview
+```
+
+### Core Architecture Overview
+
+Kakashi is built around these key principles:
+
+1. **Performance-First**: Every design decision prioritizes performance
+2. **Thread Safety**: Zero contention through thread-local storage
+3. **Memory Efficiency**: Minimal allocations and buffer pooling
+4. **Clean API**: Simple, intuitive interface for developers
+
+## 🔧 Development Setup
 
 ### Prerequisites
 
@@ -30,39 +64,93 @@ title: Contributing
    pip install -e .[dev]
    ```
 
-4. **Install pre-commit hooks**:
+## 🧪 Testing Strategy
+
+### Test Categories
+
+#### Unit Tests
+
+Test individual components in isolation:
+
+```python
+import pytest
+from kakashi.core.logger import Logger
+
+class TestLogger:
+    def test_logger_creation(self):
+        """Test basic logger creation."""
+        logger = Logger("test.logger")
+        assert logger.name == "test.logger"
+        assert logger._min_level == 20  # INFO level
+    
+    def test_level_filtering(self):
+        """Test level filtering works correctly."""
+        logger = Logger("test", min_level=30)  # WARNING and above
+        
+        # DEBUG should be filtered out
+        logger._log(10, "debug message")  # No output expected
+        
+        # WARNING should pass through
+        logger._log(30, "warning message")  # Should be processed
+```
+
+#### Performance Tests
+
+Test performance characteristics:
+
+```python
+import pytest
+import time
+from concurrent.futures import ThreadPoolExecutor
+
+@pytest.mark.performance
+class TestLoggerPerformance:
+    def test_single_thread_throughput(self):
+        """Test single-thread logging throughput."""
+        logger = Logger("perf_test")
+        
+        # Warm up
+        for _ in range(1000):
+            logger._log(20, "warm up message")
+        
+        # Benchmark
+        start_time = time.time()
+        num_logs = 100000
+        
+        for i in range(num_logs):
+            logger._log(20, f"benchmark message {i}")
+        
+        elapsed = time.time() - start_time
+        throughput = num_logs / elapsed
+        
+        # Assert minimum throughput
+        assert throughput > 50000, f"Throughput {throughput:.0f} logs/sec too low"
+```
+
+## 🚀 Contributing Workflow
+
+### Before Starting
+
+1. **Open an issue** to discuss the feature or bug fix
+2. **Check existing code** for similar functionality
+3. **Review architecture** to understand design patterns
+4. **Write tests first** (TDD approach recommended)
+
+### Feature Development Process
+
+1. **Create feature branch**:
    ```bash
-   pre-commit install
+   git checkout -b feature/my-feature
    ```
 
-### Project Structure
+2. **Write failing tests** for the new functionality
+3. **Implement the feature** following existing patterns
+4. **Make tests pass** with minimal code changes
+5. **Refactor and optimize** while keeping tests green
+6. **Add documentation** and examples
+7. **Submit pull request** with clear description
 
-```
-kakashi/
-├── kakashi/                 # Main package
-│   ├── __init__.py         # Public API exports
-│   ├── api.py              # Top-level API functions
-│   ├── fallback.py         # Fallback loggers for error cases
-│   ├── core/               # Core functional components
-│   │   ├── pipeline.py     # Functional pipeline architecture
-│   │   ├── records.py      # Immutable data structures
-│   │   ├── config.py       # Immutable configuration
-│   │   ├── interface.py    # Logger factory functions
-│   │   ├── async_*.py      # Async backend components
-│   │   └── structured_*.py # Structured logging components
-│   ├── integrations/       # Web framework integrations
-│   │   ├── fastapi_integration.py
-│   │   ├── flask_integration.py
-│   │   └── django_integration.py
-│   └── examples/           # Usage examples and demos
-├── tests/                  # Test suite
-├── documentation/          # Docusaurus documentation site
-├── pyproject.toml         # Package configuration
-├── setup.py               # Setuptools configuration
-└── README.md              # Project overview
-```
-
-## Code Style
+## 📝 Code Style & Standards
 
 ### Python Style Guide
 
@@ -73,312 +161,120 @@ kakashi/
 
 ### Code Formatting
 
-```bash
-# Format code
-black kakashi/ tests/
-
-# Check formatting
-black --check kakashi/ tests/
-
-# Lint code
-flake8 kakashi/ tests/
-
-# Type checking
-mypy kakashi/
-```
-
-### Documentation Style
-
-- **Google-style docstrings** for functions and classes
-- **Type annotations** in docstrings when helpful
-- **Examples** in docstrings for complex functions
-
 ```python
-def create_pipeline(config: PipelineConfig) -> Pipeline:
-    """Create a logging pipeline from configuration.
+def create_high_performance_logger(
+    name: str, 
+    min_level: int = 20, 
+    batch_size: int = 100
+) -> Logger:
+    """Create a high-performance logger instance.
     
     Args:
-        config: Immutable pipeline configuration containing enrichers,
-            filters, formatters, and writers.
-    
+        name: Logger name (typically __name__)
+        min_level: Minimum log level (default: INFO)
+        batch_size: Batch size for I/O optimization
+        
     Returns:
-        A configured Pipeline instance ready for processing log records.
-    
-    Example:
-        >>> config = PipelineConfig(
-        ...     min_level=LogLevel.INFO,
-        ...     formatter=json_formatter,
-        ...     writers=(console_writer,)
-        ... )
-        >>> pipeline = create_pipeline(config)
-        >>> pipeline.process(log_record)
+        Configured Logger instance
     """
+    return Logger(name, min_level, batch_size)
 ```
 
-## Testing
+## 🔍 Debugging & Profiling
 
-### Test Structure
-
-- **Unit tests**: Test individual functions and classes
-- **Integration tests**: Test component interactions
-- **End-to-end tests**: Test complete workflows
-- **Performance tests**: Benchmark critical paths
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=kakashi --cov-report=html
-
-# Run specific test file
-pytest tests/test_pipeline.py
-
-# Run tests matching pattern
-pytest -k "test_async"
-
-# Run performance tests
-pytest -m "performance"
-```
-
-### Test Categories
+### Performance Profiling
 
 ```python
-import pytest
+import cProfile
+import pstats
+from kakashi.core.logger import Logger
 
-@pytest.mark.unit
-def test_log_record_creation():
-    """Unit test for LogRecord creation."""
-    pass
-
-@pytest.mark.integration
-def test_pipeline_integration():
-    """Integration test for pipeline components."""
-    pass
-
-@pytest.mark.performance
-def test_pipeline_throughput():
-    """Performance test for pipeline throughput."""
-    pass
+def profile_logging_performance():
+    """Profile logging performance."""
+    logger = Logger("profile_test")
+    
+    # Profile logging operations
+    profiler = cProfile.Profile()
+    profiler.enable()
+    
+    # Perform logging operations
+    for i in range(10000):
+        logger._log(20, f"test message {i}")
+    
+    profiler.disable()
+    
+    # Analyze results
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('cumulative')
+    stats.print_stats(10)  # Top 10 functions
 ```
 
-### Writing Tests
-
-#### Unit Test Example
+### Memory Profiling
 
 ```python
-import pytest
-from kakashi.core.records import LogRecord, LogLevel, LogContext
+import tracemalloc
+import gc
+from kakashi.core.logger import Logger
 
-class TestLogRecord:
-    """Test LogRecord functionality."""
+def profile_memory_usage():
+    """Profile memory usage during logging."""
+    tracemalloc.start()
     
-    def test_record_creation(self):
-        """Test basic record creation."""
-        record = LogRecord(
-            timestamp=1234567890.0,
-            level=LogLevel.INFO,
-            logger_name='test',
-            message='Test message'
-        )
-        
-        assert record.timestamp == 1234567890.0
-        assert record.level == LogLevel.INFO
-        assert record.logger_name == 'test'
-        assert record.message == 'Test message'
+    logger = Logger("memory_test")
     
-    def test_record_immutability(self):
-        """Test that records are immutable."""
-        record = LogRecord(
-            timestamp=1234567890.0,
-            level=LogLevel.INFO,
-            logger_name='test',
-            message='Test message'
-        )
-        
-        with pytest.raises(AttributeError):
-            record.message = 'Modified message'
+    # Take snapshot before logging
+    snapshot1 = tracemalloc.take_snapshot()
     
-    def test_context_merging(self):
-        """Test context merging functionality."""
-        context1 = LogContext(ip='192.168.1.1', user_id='123')
-        context2 = LogContext(ip='10.0.0.1', session_id='abc')
-        
-        merged = context1.merge(context2)
-        
-        assert merged.ip == '10.0.0.1'  # context2 takes precedence
-        assert merged.user_id == '123'   # from context1
-        assert merged.session_id == 'abc'  # from context2
+    # Perform logging operations
+    for i in range(1000):
+        logger._log(20, f"memory test message {i}")
+    
+    # Force garbage collection
+    gc.collect()
+    
+    # Take snapshot after logging
+    snapshot2 = tracemalloc.take_snapshot()
+    
+    # Analyze memory usage
+    top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+    
+    print("Top memory allocations:")
+    for stat in top_stats[:10]:
+        print(stat)
 ```
 
-#### Integration Test Example
+## 🎯 Common Contribution Areas
 
-```python
-import pytest
-import tempfile
-from pathlib import Path
-from kakashi.core.pipeline import Pipeline, PipelineConfig
-from kakashi.core.records import LogRecord, LogLevel
+### Performance Improvements
 
-class TestPipelineIntegration:
-    """Test pipeline component integration."""
-    
-    def test_file_pipeline_integration(self):
-        """Test complete file logging pipeline."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            log_file = Path(temp_dir) / 'test.log'
-            
-            # Create pipeline
-            config = PipelineConfig(
-                min_level=LogLevel.INFO,
-                formatter=json_formatter,
-                writers=(file_writer(log_file),)
-            )
-            pipeline = Pipeline(config)
-            
-            # Process log record
-            record = LogRecord(
-                timestamp=1234567890.0,
-                level=LogLevel.INFO,
-                logger_name='test',
-                message='Test message'
-            )
-            pipeline.process(record)
-            
-            # Verify output
-            assert log_file.exists()
-            content = log_file.read_text()
-            assert 'Test message' in content
-            assert 'INFO' in content
-```
+1. **Hot Path Optimization**
+   - Reduce CPU cycles in critical paths
+   - Optimize memory allocations
+   - Improve cache locality
 
-### Performance Testing
+2. **Concurrency Enhancements**
+   - Better thread scaling
+   - Lock-free algorithms
+   - Improved batch processing
 
-```python
-import pytest
-import time
-from kakashi.core.pipeline import Pipeline, PipelineConfig
+3. **Memory Optimization**
+   - Buffer pooling strategies
+   - Object reuse patterns
+   - Garbage collection optimization
 
-@pytest.mark.performance
-class TestPipelinePerformance:
-    """Performance tests for pipeline components."""
-    
-    def test_pipeline_throughput(self):
-        """Test pipeline throughput under load."""
-        config = PipelineConfig(
-            min_level=LogLevel.INFO,
-            formatter=optimized_json_formatter,
-            writers=(noop_writer,)  # No-op writer for pure pipeline testing
-        )
-        pipeline = Pipeline(config)
-        
-        # Warm up
-        for _ in range(100):
-            pipeline.process(create_test_record())
-        
-        # Benchmark
-        start_time = time.time()
-        num_records = 10000
-        
-        for _ in range(num_records):
-            pipeline.process(create_test_record())
-        
-        elapsed = time.time() - start_time
-        throughput = num_records / elapsed
-        
-        # Assert minimum throughput (adjust based on requirements)
-        assert throughput > 50000, f"Throughput {throughput:.0f} records/sec too low"
-```
+### Feature Additions
 
-## Architecture Guidelines
+1. **New Output Formats**
+   - JSON formatters
+   - Custom serialization
+   - Template-based formatting
 
-### Functional Design Principles
+2. **Additional Sinks**
+   - Network logging
+   - Database logging
+   - Cloud service integration
 
-1. **Immutability**: All data structures should be immutable
-2. **Pure Functions**: Pipeline components should be pure functions
-3. **Composability**: Components should be easily composable
-4. **Error Isolation**: Errors in one component shouldn't affect others
-
-### Performance Considerations
-
-1. **Hot Path Optimization**: Optimize the common logging path
-2. **Lazy Evaluation**: Defer expensive operations until needed
-3. **Memory Efficiency**: Minimize allocations and enable sharing
-4. **Thread Safety**: Design for concurrent access without locks
-
-### Error Handling Philosophy
-
-1. **Never Crash**: Logging should never crash the host application
-2. **Graceful Degradation**: Provide fallbacks when components fail
-3. **Silent Operation**: Log internal errors to stderr, don't propagate
-4. **Recovery**: Attempt to recover from transient failures
-
-## Adding New Features
-
-### Before Starting
-
-1. **Open an issue** to discuss the feature
-2. **Check existing code** for similar functionality
-3. **Review architecture** to understand design patterns
-4. **Write tests first** (TDD approach recommended)
-
-### Feature Development Process
-
-1. **Create feature branch**: `git checkout -b feature/my-feature`
-2. **Write failing tests** for the new functionality
-3. **Implement the feature** following existing patterns
-4. **Make tests pass** with minimal code changes
-5. **Refactor and optimize** while keeping tests green
-6. **Add documentation** and examples
-7. **Submit pull request** with clear description
-
-### Example: Adding a New Enricher
-
-```python
-# 1. Write the test first
-def test_hostname_enricher():
-    """Test hostname enricher adds hostname to records."""
-    record = LogRecord(
-        timestamp=time.time(),
-        level=LogLevel.INFO,
-        logger_name='test',
-        message='Test message'
-    )
-    
-    enriched = hostname_enricher(record)
-    
-    assert enriched.extra_fields is not None
-    assert 'hostname' in enriched.extra_fields
-    assert enriched.extra_fields['hostname'] == socket.gethostname()
-
-# 2. Implement the enricher
-import socket
-from kakashi.core.records import LogRecord
-
-def hostname_enricher(record: LogRecord) -> LogRecord:
-    """Add hostname to log record.
-    
-    Args:
-        record: The log record to enrich.
-    
-    Returns:
-        A new log record with hostname added to extra_fields.
-    """
-    hostname = socket.gethostname()
-    extra_fields = {**(record.extra_fields or {}), 'hostname': hostname}
-    
-    return record.with_extra_fields(extra_fields)
-
-# 3. Add to pipeline module exports
-__all__ = [
-    # ... existing exports ...
-    'hostname_enricher',
-]
-```
-
-## Pull Request Guidelines
+## 📋 Pull Request Guidelines
 
 ### PR Checklist
 
@@ -414,7 +310,7 @@ Brief description of the changes.
 - [ ] Performance tested
 ```
 
-## Release Process
+## 🚀 Release Process
 
 ### Version Numbering
 
@@ -433,7 +329,7 @@ Kakashi follows [Semantic Versioning](https://semver.org/):
 6. **Push to PyPI**: `twine upload dist/*`
 7. **Create GitHub release** with release notes
 
-## Community
+## 🤝 Community
 
 ### Getting Help
 
@@ -445,9 +341,6 @@ Kakashi follows [Semantic Versioning](https://semver.org/):
 
 We follow the [Contributor Covenant](https://www.contributor-covenant.org/) code of conduct. Please be respectful and inclusive in all interactions.
 
-### Recognition
+---
 
-Contributors are recognized in:
-- **README.md**: Major contributors listed
-- **CHANGELOG.md**: Contributors credited for each release
-- **GitHub**: Contributor graphs and statistics
+Thank you for contributing to Kakashi! Your contributions help make it a better logging library for everyone.
