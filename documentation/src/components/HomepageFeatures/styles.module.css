@@ -7,5 +7,14 @@
 
 .featureSvg {
   height: 200px;
-  width: 200px;
+  width: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(229, 57, 57, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featureSvg:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(229, 57, 57, 0.3);
 }

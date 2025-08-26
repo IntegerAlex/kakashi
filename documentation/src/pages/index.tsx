@@ -13,6 +13,13 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
+        <div className="text--center">
+          <img 
+            src={require('@site/static/img/kakashi-logo.png').default} 
+            alt="Kakashi Logo" 
+            className={styles.heroLogo}
+          />
+        </div>
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
         </Heading>

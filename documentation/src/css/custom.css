@@ -5,48 +5,48 @@
 
 /* Dark mode as default - light mode removed */
 :root {
-  /* Primary Orange Colors - More subtle */
-  --ifm-color-primary: #e67e22;
-  --ifm-color-primary-dark: #d35400;
-  --ifm-color-primary-darker: #c0392b;
-  --ifm-color-primary-darkest: #a04000;
-  --ifm-color-primary-light: #f39c12;
-  --ifm-color-primary-lighter: #f7dc6f;
-  --ifm-color-primary-lightest: #fdeaa7;
-  
-  /* Secondary White Colors - Softer */
-  --ifm-color-secondary: #f8f9fa;
-  --ifm-color-secondary-dark: #e9ecef;
-  --ifm-color-secondary-darker: #dee2e6;
-  --ifm-color-secondary-darkest: #ced4da;
-  --ifm-color-secondary-light: #f8f9fa;
-  --ifm-color-secondary-lighter: #f8f9fa;
-  --ifm-color-secondary-lightest: #f8f9fa;
-  
-  /* Dark Background Colors - Softer */
-  --ifm-background-color: #1a1a1a;
-  --ifm-background-surface-color: #2a2a2a;
-  --ifm-background-color-emphasis: #3a3a3a;
-  
-  /* Text Colors - Softer contrast */
+  /* Primary - Bright/Dark Reds from logo */
+  --ifm-color-primary: #E53939; /* Bright Red */
+  --ifm-color-primary-dark: #C02424; /* Dark Red */
+  --ifm-color-primary-darker: #8B1515;
+  --ifm-color-primary-darkest: #5E0E0E;
+  --ifm-color-primary-light: #FF5C5C;
+  --ifm-color-primary-lighter: #FF8A8A;
+  --ifm-color-primary-lightest: #FFB3B3;
+
+  /* Secondary - Cyan accent from logo */
+  --ifm-color-secondary: #2BA3C7;
+  --ifm-color-secondary-dark: #2389A7;
+  --ifm-color-secondary-darker: #1E7892;
+  --ifm-color-secondary-darkest: #175B70;
+  --ifm-color-secondary-light: #4EC0DF;
+  --ifm-color-secondary-lighter: #7DD4EA;
+  --ifm-color-secondary-lightest: #A6E4F2;
+
+  /* Backgrounds from logo */
+  --ifm-background-color: #0F1115; /* Background Black */
+  --ifm-background-surface-color: #2E2F33; /* Dark Gray */
+  --ifm-background-color-emphasis: #1A1C21;
+
+  /* Text */
   --ifm-color-content: #f8f9fa;
-  --ifm-color-content-secondary: #d1d5db;
+  --ifm-color-content-secondary: #c9ced6;
   --ifm-color-content-inverse: #000000;
-  
-  /* Code and UI Colors */
+
+  /* Code and UI */
   --ifm-code-font-size: 95%;
-  --ifm-code-background: #2a2a2a;
-  --ifm-code-color: #f39c12;
-  --docusaurus-highlighted-code-line-bg: rgba(230, 126, 34, 0.15);
-  
-  /* Border and Divider Colors - Softer */
-  --ifm-border-color: #404040;
-  --ifm-divider-color: #4a4a4a;
-  
-  /* Link Colors - More subtle */
-  --ifm-link-color: #e67e22;
+  --ifm-code-background: #2E2F33;
+  --ifm-code-color: #2BA3C7; /* Cyan for code */
+  --docusaurus-highlighted-code-line-bg: rgba(229, 57, 57, 0.15);
+
+  /* Borders/Dividers */
+  --ifm-border-color: #3A3F45;
+  --ifm-divider-color: #464B52;
+
+  /* Links (cyan base, red hover) */
+  --ifm-link-color: #2BA3C7;
   --ifm-link-decoration: none;
-  --ifm-link-hover-color: #f39c12;
+  --ifm-link-hover-color: #E53939;
   --ifm-link-hover-decoration: underline;
 }
 
@@ -57,7 +57,7 @@ html[data-theme] {
 
 /* Enhanced Hero Section */
 .hero--primary {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 30%, #3a3a3a 70%, #e67e22 100%);
+  background: linear-gradient(135deg, #0F1115 0%, #1A1C21 30%, #2E2F33 70%, #E53939 100%);
   position: relative;
 }
 
@@ -68,7 +68,7 @@ html[data-theme] {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 70% 30%, rgba(230, 126, 34, 0.08) 0%, transparent 50%);
+  background: radial-gradient(circle at 70% 30%, rgba(229, 57, 57, 0.08) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -90,32 +90,32 @@ html[data-theme] {
 
 /* Enhanced Buttons */
 .button--secondary {
-  background-color: #e67e22 !important;
-  border-color: #e67e22 !important;
+  background-color: #E53939 !important;
+  border-color: #E53939 !important;
   color: #f8f9fa !important;
   font-weight: 600;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(230, 126, 34, 0.3);
+  box-shadow: 0 2px 4px rgba(229, 57, 57, 0.3);
 }
 
 .button--secondary:hover {
-  background-color: #d35400 !important;
-  border-color: #d35400 !important;
+  background-color: #C02424 !important;
+  border-color: #C02424 !important;
   color: #f8f9fa !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(230, 126, 34, 0.4);
+  box-shadow: 0 4px 8px rgba(229, 57, 57, 0.4);
 }
 
 /* Enhanced Navigation */
 .navbar {
-  background-color: #1a1a1a !important;
-  border-bottom: 2px solid #e67e22;
-  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.15);
+  background-color: #0F1115 !important;
+  border-bottom: 2px solid #E53939;
+  box-shadow: 0 2px 8px rgba(229, 57, 57, 0.15);
 }
 
 .navbar__brand {
-  color: #e67e22 !important;
+  color: #E53939 !important;
   font-weight: 700;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
@@ -127,29 +127,29 @@ html[data-theme] {
 }
 
 .navbar__link:hover {
-  color: #e67e22 !important;
+  color: #E53939 !important;
   text-decoration: none;
 }
 
 .navbar__link--active {
-  color: #e67e22 !important;
+  color: #E53939 !important;
   font-weight: 600;
 }
 
 /* Enhanced Footer */
 .footer--dark {
-  background-color: #1a1a1a !important;
-  border-top: 2px solid #e67e22;
+  background-color: #0F1115 !important;
+  border-top: 2px solid #E53939;
 }
 
 .footer__link-item {
-  color: #e67e22 !important;
+  color: #2BA3C7 !important;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .footer__link-item:hover {
-  color: #f39c12 !important;
+  color: #E53939 !important;
   text-decoration: underline;
 }
 
@@ -160,22 +160,22 @@ html[data-theme] {
 
 /* Enhanced Code Blocks */
 .prism-code {
-  border-left: 4px solid #e67e22 !important;
-  background-color: #2a2a2a !important;
+  border-left: 4px solid #E53939 !important;
+  background-color: #2E2F33 !important;
   border-radius: 0 4px 4px 0;
 }
 
 code {
-  background-color: #2a2a2a !important;
-  color: #f39c12 !important;
-  border: 1px solid #404040;
+  background-color: #2E2F33 !important;
+  color: #2BA3C7 !important;
+  border: 1px solid #3A3F45;
   border-radius: 3px;
   padding: 2px 6px;
 }
 
 pre {
-  background-color: #2a2a2a !important;
-  border: 1px solid #404040;
+  background-color: #2E2F33 !important;
+  border: 1px solid #3A3F45;
   border-radius: 6px;
 }
 
@@ -189,16 +189,16 @@ pre {
 }
 
 .menu__link:hover {
-  color: #e67e22 !important;
-  background-color: rgba(255, 102, 0, 0.1) !important;
+  color: #E53939 !important;
+  background-color: rgba(229, 57, 57, 0.1) !important;
   text-decoration: none;
 }
 
 .menu__link--active {
-  color: #e67e22 !important;
-  background-color: rgba(255, 102, 0, 0.15) !important;
+  color: #E53939 !important;
+  background-color: rgba(229, 57, 57, 0.15) !important;
   font-weight: 600;
-  border-left: 3px solid #e67e22;
+  border-left: 3px solid #E53939;
 }
 
 /* Enhanced Table of Contents */
@@ -212,70 +212,70 @@ pre {
 }
 
 .table-of-contents__link:hover {
-  color: #e67e22 !important;
-  background-color: rgba(255, 102, 0, 0.1) !important;
+  color: #E53939 !important;
+  background-color: rgba(229, 57, 57, 0.1) !important;
   text-decoration: none;
 }
 
 .table-of-contents__link--active {
-  color: #e67e22 !important;
-  background-color: rgba(255, 102, 0, 0.15) !important;
+  color: #E53939 !important;
+  background-color: rgba(229, 57, 57, 0.15) !important;
   font-weight: 600;
-  border-left: 3px solid #e67e22;
+  border-left: 3px solid #E53939;
 }
 
 /* Enhanced Cards and Content */
 .card {
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333;
+  background-color: #0F1115 !important;
+  border: 1px solid #3A3F45;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .card:hover {
-  border-color: #e67e22;
-  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
+  border-color: #E53939;
+  box-shadow: 0 4px 12px rgba(229, 57, 57, 0.2);
 }
 
 /* Enhanced Tables */
 table {
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333;
+  background-color: #0F1115 !important;
+  border: 1px solid #3A3F45;
   border-radius: 6px;
 }
 
 th {
-  background-color: #2a2a2a !important;
+  background-color: #2E2F33 !important;
   color: #ffffff !important;
-  border-bottom: 2px solid #e67e22;
+  border-bottom: 2px solid #E53939;
 }
 
 td {
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid #3A3F45;
   color: #e0e0e0 !important;
 }
 
 /* Enhanced Forms */
 input, textarea, select {
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333 !important;
+  background-color: #0F1115 !important;
+  border: 1px solid #3A3F45 !important;
   color: #ffffff !important;
   border-radius: 4px;
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: #e67e22 !important;
-  box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.2) !important;
+  border-color: #E53939 !important;
+  box-shadow: 0 0 0 2px rgba(229, 57, 57, 0.2) !important;
 }
 
 /* Enhanced Links */
 a {
-  color: #e67e22 !important;
+  color: #2BA3C7 !important;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #f39c12 !important;
+  color: #E53939 !important;
   text-decoration: underline;
 }
 
@@ -293,13 +293,13 @@ h1::after, h2::after, h3::after {
   left: 0;
   width: 60px;
   height: 2px;
-  background-color: #e67e22;
+  background-color: #E53939;
 }
 
 /* Enhanced Blockquotes */
 blockquote {
-  background-color: #1a1a1a !important;
-  border-left: 4px solid #e67e22;
+  background-color: #0F1115 !important;
+  border-left: 4px solid #E53939;
   color: #e0e0e0 !important;
   padding: 16px;
   margin: 16px 0;
@@ -317,8 +317,8 @@ li::marker {
 
 /* Enhanced Search */
 .searchBox {
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333;
+  background-color: #0F1115 !Important;
+  border: 1px solid #3A3F45;
   border-radius: 6px;
 }
 
@@ -333,28 +333,28 @@ li::marker {
 
 /* Enhanced Pagination */
 .pagination-nav__link {
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333;
+  background-color: #0F1115 !important;
+  border: 1px solid #3A3F45;
   color: #ffffff !important;
   transition: all 0.2s ease;
 }
 
 .pagination-nav__link:hover {
-  border-color: #e67e22;
-  background-color: rgba(255, 102, 0, 0.1) !important;
+  border-color: #E53939;
+  background-color: rgba(229, 57, 57, 0.1) !important;
 }
 
 .pagination-nav__label {
-  color: #e67e22 !important;
+  color: #E53939 !important;
 }
 
 /* Enhanced Breadcrumbs */
 .breadcrumbs__link {
-  color: #e67e22 !important;
+  color: #2BA3C7 !important;
 }
 
 .breadcrumbs__link:hover {
-  color: #f39c12 !important;
+  color: #E53939 !important;
 }
 
 .breadcrumbs__item--active .breadcrumbs__link {
@@ -363,33 +363,33 @@ li::marker {
 
 /* Enhanced Admonitions */
 .admonition {
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333;
+  background-color: #0F1115 !important;
+  border: 1px solid #3A3F45;
   border-radius: 6px;
 }
 
 .admonition-heading {
-  color: #e67e22 !important;
+  color: #E53939 !important;
   font-weight: 600;
 }
 
 /* Enhanced Tabs */
 .tabs__item {
   color: #e0e0e0 !important;
-  background-color: #1a1a1a !important;
-  border: 1px solid #333333;
+  background-color: #0F1115 !important;
+  border: 1px solid #3A3F45;
   transition: all 0.2s ease;
 }
 
 .tabs__item--active {
-  color: #e67e22 !important;
-  background-color: #2a2a2a !important;
-  border-color: #e67e22;
+  color: #E53939 !important;
+  background-color: #2E2F33 !important;
+  border-color: #E53939;
 }
 
 .tabs__item:hover {
-  color: #e67e22 !important;
-  background-color: rgba(255, 102, 0, 0.1) !important;
+  color: #E53939 !important;
+  background-color: rgba(229, 57, 57, 0.1) !important;
 }
 
 /* Enhanced Scrollbar */
@@ -398,31 +398,31 @@ li::marker {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #090A0D;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e67e22;
+  background: #E53939;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #d35400;
+  background: #C02424;
 }
 
 /* Enhanced Focus States */
 *:focus {
-  outline: 2px solid #e67e22 !important;
+  outline: 2px solid #E53939 !important;
   outline-offset: 2px;
 }
 
 /* Enhanced Selection */
 ::selection {
-  background-color: #e67e22 !important;
+  background-color: #E53939 !important;
   color: #ffffff !important;
 }
 
 ::-moz-selection {
-  background-color: #e67e22 !important;
+  background-color: #E53939 !important;
   color: #ffffff !important;
 }

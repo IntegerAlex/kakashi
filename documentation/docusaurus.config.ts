@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Kakashi',
   tagline: 'High-performance Python logging with structured, contextual pipelines',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/kakashi-logo.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -65,12 +65,12 @@ const config: Config = {
     },
     
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/socialcard.png',
     navbar: {
       title: 'Kakashi',
       logo: {
         alt: 'Kakashi Logo',
-        src: 'img/logo.svg',
+        src: 'img/kakashi-logo.png',
       },
       items: [
         { type: 'docSidebar', sidebarId: 'mainSidebar', position: 'left', label: 'Docs' },

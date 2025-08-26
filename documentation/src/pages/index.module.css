@@ -10,9 +10,29 @@
   overflow: hidden;
 }
 
+.heroLogo {
+  height: 120px;
+  width: 120px;
+  margin-bottom: 2rem;
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(229, 57, 57, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.heroLogo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(229, 57, 57, 0.4);
+}
+
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
+  }
+  
+  .heroLogo {
+    height: 80px;
+    width: 80px;
+    margin-bottom: 1.5rem;
   }
 }
 
