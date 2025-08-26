@@ -1,0 +1,20 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include setup.py
+recursive-include kakashi *.py
+recursive-include kakashi *.pyi
+recursive-include kakashi *.txt
+recursive-include kakashi *.md
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * *.so
+recursive-exclude * .DS_Store
+recursive-exclude * .git*
+recursive-exclude * .hg*
+recursive-exclude * .svn*
+recursive-exclude * .tox*
+recursive-exclude * .venv*
+recursive-exclude * build*
+recursive-exclude * dist*
+recursive-exclude * *.egg-info*
