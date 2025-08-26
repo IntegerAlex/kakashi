@@ -72,6 +72,7 @@ const sidebars: SidebarsConfig = {
         'development/contributing',
         'development/testing',
         'development/performance',
+        'development/perf-results',
       ],
     },
   ],
