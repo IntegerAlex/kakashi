@@ -1,0 +1,237 @@
+{
+  "timestamp": "2025-08-27T00:27:00.374953",
+  "libraries_tested": [
+    "standard",
+    "loguru",
+    "structlog",
+    "kakashi",
+    "system_info",
+    "comparative_analysis"
+  ],
+  "raw_results": {
+    "standard": {
+      "basic_logging": {
+        "logs_per_second": 18159.424995838028,
+        "total_time": 5.506782292000935,
+        "total_logs": 100000
+      },
+      "concurrent_logging": {
+        "logs_per_second": 10745.41833471585,
+        "total_time": 7.4450335490000725,
+        "total_logs": 80000,
+        "num_threads": 16,
+        "scaling_factor": 0.5917267940575542,
+        "thread_times": [
+          7.4126510370006145,
+          7.427680263999719,
+          7.290663370000402,
+          7.4372282849999465,
+          7.29769916999976,
+          7.44096350899963,
+          7.296721411999897,
+          7.174252242999501,
+          6.907130143999893,
+          7.308212284000547,
+          7.403557384999658,
+          6.663385475001633,
+          6.81108475200017,
+          7.373172061999867,
+          6.94242609200046,
+          7.079369655000846
+        ]
+      }
+    },
+    "loguru": {
+      "basic_logging": {
+        "logs_per_second": 14689.580243470256,
+        "total_time": 6.80754646099922,
+        "total_logs": 100000
+      },
+      "concurrent_logging": {
+        "logs_per_second": 6781.6782599060925,
+        "total_time": 11.796490033000737,
+        "total_logs": 80000,
+        "num_threads": 16,
+        "scaling_factor": 0.4616658983785907,
+        "thread_times": [
+          11.783749392001482,
+          11.788452556998891,
+          11.79103305100034,
+          11.790554155000791,
+          11.790043497001534,
+          11.789922412999658,
+          11.789754257999448,
+          11.789284419999603,
+          11.788970462999714,
+          11.788545561999854,
+          11.788126763000037,
+          11.787569354999505,
+          11.786806371999774,
+          11.786295064001024,
+          11.786019380999278,
+          11.78565517700008
+        ]
+      }
+    },
+    "structlog": {
+      "basic_logging": {
+        "logs_per_second": 12180.885806831679,
+        "total_time": 8.209583571000621,
+        "total_logs": 100000
+      },
+      "concurrent_logging": {
+        "logs_per_second": 5693.613040669223,
+        "total_time": 14.050831946000471,
+        "total_logs": 80000,
+        "num_threads": 16,
+        "scaling_factor": 0.46742192078312944,
+        "thread_times": [
+          14.045471163000911,
+          13.996555570000055,
+          14.041882612998961,
+          14.045976900000824,
+          14.00996821499939,
+          14.044493174000308,
+          14.04678225599855,
+          14.042125462001422,
+          13.986652134000906,
+          14.044403772000805,
+          14.027957927999523,
+          14.00822741400043,
+          14.02917644199988,
+          14.030991117999292,
+          14.025474923999354,
+          14.034986173999641
+        ]
+      }
+    },
+    "kakashi": {
+      "basic_logging": {
+        "logs_per_second": 56310.70586556663,
+        "total_time": 1.7758612409998022,
+        "total_logs": 100000
+      },
+      "concurrent_logging": {
+        "logs_per_second": 66116.65707276738,
+        "total_time": 1.2099825299992517,
+        "total_logs": 80000,
+        "num_threads": 16,
+        "scaling_factor": 1.1741400868000302,
+        "thread_times": [
+          1.1973653830009425,
+          1.143732975999228,
+          1.189054162001412,
+          1.1703801969997585,
+          1.2047244050008885,
+          1.2060013509999408,
+          1.1894773590011027,
+          1.1402576679993217,
+          1.1209666220001964,
+          1.202026876000673,
+          1.1969453519996023,
+          1.1095824420008285,
+          1.1952216930003488,
+          1.1984813779999968,
+          1.1860106640015147,
+          1.2022583520010812
+        ]
+      },
+      "async_logging": {
+        "logs_per_second": 169074.00833625076,
+        "total_time": 0.5914569659998961,
+        "total_logs": 100000
+      }
+    },
+    "system_info": {
+      "cpu_count": 16,
+      "memory_total_gb": 7.41033935546875,
+      "python_version": "3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0]",
+      "platform": "linux",
+      "kakashi_version": "2.0.0-dev",
+      "libraries_available": {
+        "logging": true,
+        "loguru": true,
+        "structlog": true,
+        "kakashi": true
+      }
+    },
+    "comparative_analysis": {
+      "throughput_comparison": {
+        "standard": {
+          "logs_per_second": 18159.424995838028,
+          "relative_performance": 32.24861900895174
+        },
+        "loguru": {
+          "logs_per_second": 14689.580243470256,
+          "relative_performance": 26.086656200935266
+        },
+        "structlog": {
+          "logs_per_second": 12180.885806831679,
+          "relative_performance": 21.631562985396982
+        },
+        "kakashi": {
+          "logs_per_second": 56310.70586556663,
+          "relative_performance": 100.0
+        }
+      },
+      "concurrency_scaling": {
+        "standard": {
+          "scaling_factor": 0.5917267940575542,
+          "logs_per_second": 10745.41833471585
+        },
+        "loguru": {
+          "scaling_factor": 0.4616658983785907,
+          "logs_per_second": 6781.6782599060925
+        },
+        "structlog": {
+          "scaling_factor": 0.46742192078312944,
+          "logs_per_second": 5693.613040669223
+        },
+        "kakashi": {
+          "scaling_factor": 1.1741400868000302,
+          "logs_per_second": 66116.65707276738
+        }
+      }
+    }
+  },
+  "comparative_analysis": {
+    "throughput_comparison": {
+      "standard": {
+        "logs_per_second": 18159.424995838028,
+        "relative_performance": 32.24861900895174
+      },
+      "loguru": {
+        "logs_per_second": 14689.580243470256,
+        "relative_performance": 26.086656200935266
+      },
+      "structlog": {
+        "logs_per_second": 12180.885806831679,
+        "relative_performance": 21.631562985396982
+      },
+      "kakashi": {
+        "logs_per_second": 56310.70586556663,
+        "relative_performance": 100.0
+      }
+    },
+    "concurrency_scaling": {
+      "standard": {
+        "scaling_factor": 0.5917267940575542,
+        "logs_per_second": 10745.41833471585
+      },
+      "loguru": {
+        "scaling_factor": 0.4616658983785907,
+        "logs_per_second": 6781.6782599060925
+      },
+      "structlog": {
+        "scaling_factor": 0.46742192078312944,
+        "logs_per_second": 5693.613040669223
+      },
+      "kakashi": {
+        "scaling_factor": 1.1741400868000302,
+        "logs_per_second": 66116.65707276738
+      }
+    }
+  },
+  "benchmark_version": "2.0.0",
+  "notes": "Current Kakashi implementation vs industry standards"
+}

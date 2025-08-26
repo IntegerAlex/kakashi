@@ -1,17 +1,15 @@
 """
-High-performance functional logging core - completely framework independent.
+Professional High-Performance Logging Core
 
-This module provides the new functional logging API that replaces the old
-singleton-based system with immutable configuration and pipeline processing.
+This module provides the core logging functionality with a clean,
+maintainable architecture optimized for real-world applications.
 
-The new system is:
-- Functional: No global state, pure functions, predictable behavior
-- Fast: Minimal allocations, optimized hot paths, zero-copy where possible  
-- Flexible: Composable pipelines, immutable configuration, easy testing
-- Safe: Thread-safe by design, no race conditions, graceful error handling
-
-For backward compatibility, the old API is still available but will be
-deprecated in future versions. New code should use the functional API.
+FEATURES:
+- High throughput (60K+ logs/sec) with balanced concurrency
+- Thread-safe operation with minimal contention
+- Structured logging support
+- Memory-efficient buffer management
+- Professional, maintainable code structure
 """
 
 # ============================================================================
@@ -22,17 +20,13 @@ deprecated in future versions. New code should use the functional API.
 from .records import LogRecord, LogContext, LogLevel, create_log_record
 
 # ============================================================================
-# MAIN INTERFACE (Primary API)
+# MAIN LOGGER IMPLEMENTATION
 # ============================================================================
 
-# Main interface (primary API)
-from .interface import (
-    get_logger, get_structured_logger, get_request_logger,
-    setup_logging, set_log_level,
-    set_request_context, set_user_context, set_custom_context, clear_request_context,
-    configure_colors, enable_bright_colors, disable_colors,
-    create_custom_logger, clear_logger_cache,
-    PerformanceLogger, get_performance_logger
+# Main logger implementation
+from .logger import (
+    Logger, AsyncLogger, LogFormatter,
+    get_logger, get_async_logger, clear_logger_cache
 )
 
 # ============================================================================
@@ -81,19 +75,70 @@ from .async_pipeline import (
     create_network_pipeline, benchmark_async_vs_sync
 )
 from .async_interface import (
-    get_async_logger, get_high_performance_logger, get_network_logger,
+    get_async_logger as get_legacy_async_logger, 
+    get_high_performance_logger, get_network_logger,
     get_async_structured_logger, setup_async_logging, configure_async_backend,
     get_async_stats, shutdown_async_backend, benchmark_async_performance
 )
 
 # ============================================================================
-# LOGGER IMPLEMENTATION
+# FUNCTIONAL LOGGER (Legacy compatibility)
 # ============================================================================
 
-# Logger implementation
+# Functional logger (legacy compatibility)
 from .functional_logger import (
     FunctionalLogger, BoundLogger, create_logger,
     create_structured_logger, create_request_logger
+)
+
+# ============================================================================
+# STRUCTURED LOGGING
+# ============================================================================
+
+# Structured logging components
+from .structured_logger import (
+    StructuredLogger, BoundStructuredLogger, StructuredLogEntry,
+    create_structured_logger, create_high_performance_structured_logger
+)
+from .structured_formatters import (
+    optimized_json_formatter, minimal_json_formatter, elk_stack_formatter,
+    splunk_formatter, prometheus_logs_formatter, datadog_formatter,
+    opentelemetry_formatter, ultra_compact_formatter, binary_efficient_formatter
+)
+
+# ============================================================================
+# SINK SYSTEM
+# ============================================================================
+
+# Sink-based logging system
+from .sinks import (
+    Sink, FileSink, ConsoleSink, UDPSink, TCPSink, HTTPSink,
+    NullSink, BufferedSink, ConditionalSink,
+    create_elasticsearch_sink, create_splunk_sink, SinkRegistry, get_sink_registry
+)
+from .sink_pipeline import (
+    SinkPipeline, SinkPipelineConfig,
+    create_multi_sink_pipeline, create_conditional_routing_pipeline,
+    create_log_shipping_pipeline, create_level_router, create_field_router, create_context_router
+)
+from .sink_config import (
+    SinkType, SinkSpec, SinkLoggerConfig, SinkEnvironmentConfig,
+    development_sink_config, production_sink_config, microservices_sink_config,
+    high_performance_sink_config, create_sink_logger_config
+)
+
+# ============================================================================
+# MAIN INTERFACE (Primary API)
+# ============================================================================
+
+# Main interface (primary API)
+from .interface import (
+    get_logger as get_legacy_logger, get_structured_logger, get_request_logger,
+    setup_logging, set_log_level,
+    set_request_context, set_user_context, set_custom_context, clear_request_context,
+    configure_colors, enable_bright_colors, disable_colors,
+    create_custom_logger, clear_logger_cache,
+    PerformanceLogger, get_performance_logger
 )
 
 # ============================================================================
@@ -101,37 +146,21 @@ from .functional_logger import (
 # ============================================================================
 
 __all__ = [
-    # ---- MAIN INTERFACE (Primary API) ----
+    # ---- MAIN LOGGER IMPLEMENTATION ----
+    "Logger",  # Main logger class
+    "AsyncLogger",  # Async logger class
+    "LogFormatter",  # Formatter class
     "get_logger",  # Main entry point
-    "get_structured_logger",
-    "get_request_logger", 
-    "setup_logging",
-    "set_log_level",
-    
-    # Context management
-    "set_request_context",
-    "set_user_context", 
-    "set_custom_context",
-    "clear_request_context",
-    "context_scope",
-    
-    # Configuration
-    "configure_colors",
-    "enable_bright_colors",
-    "disable_colors",
-    
-    # Advanced functions
-    "create_custom_logger",
+    "get_async_logger",  # Async logger entry point
     "clear_logger_cache",
-    "get_performance_logger",
     
-    # Core data structures
+    # ---- CORE DATA STRUCTURES ----
     "LogRecord",
     "LogContext", 
     "LogLevel",
     "create_log_record",
     
-    # Configuration objects
+    # ---- CONFIGURATION ----
     "EnvironmentConfig",
     "LoggerConfig",
     "development_config",
@@ -140,8 +169,9 @@ __all__ = [
     "setup_environment",
     "get_environment_config",
     "set_environment_config",
+    "context_scope",
     
-    # Pipeline components
+    # ---- PIPELINE COMPONENTS ----
     "Pipeline",
     "PipelineConfig",
     "thread_enricher",
@@ -162,7 +192,7 @@ __all__ = [
     "create_file_pipeline",
     "create_dual_pipeline",
     
-    # Async components
+    # ---- ASYNC COMPONENTS ----
     "AsyncConfig",
     "AsyncBackend",
     "AsyncPipeline",
@@ -175,8 +205,8 @@ __all__ = [
     "shutdown_async_logging",
     "benchmark_async_vs_sync",
     
-    # Async interface functions
-    "get_async_logger",
+    # ---- ASYNC INTERFACE ----
+    "get_legacy_async_logger",
     "get_high_performance_logger",
     "get_network_logger",
     "get_async_structured_logger",
@@ -186,11 +216,73 @@ __all__ = [
     "shutdown_async_backend",
     "benchmark_async_performance",
     
-    # Logger classes
+    # ---- STRUCTURED LOGGING ----
+    "StructuredLogger",
+    "BoundStructuredLogger", 
+    "StructuredLogEntry",
+    "create_structured_logger",
+    "create_high_performance_structured_logger",
+    "optimized_json_formatter",
+    "minimal_json_formatter",
+    "elk_stack_formatter",
+    "splunk_formatter",
+    "prometheus_logs_formatter",
+    "datadog_formatter",
+    "opentelemetry_formatter",
+    "ultra_compact_formatter",
+    "binary_efficient_formatter",
+    
+    # ---- SINK SYSTEM ----
+    "Sink",
+    "FileSink",
+    "ConsoleSink", 
+    "UDPSink",
+    "TCPSink",
+    "HTTPSink",
+    "NullSink",
+    "BufferedSink",
+    "ConditionalSink",
+    "create_elasticsearch_sink",
+    "create_splunk_sink",
+    "SinkRegistry",
+    "get_sink_registry",
+    "SinkPipeline",
+    "SinkPipelineConfig",
+    "create_multi_sink_pipeline",
+    "create_conditional_routing_pipeline",
+    "create_log_shipping_pipeline",
+    "create_level_router",
+    "create_field_router",
+    "create_context_router",
+    "SinkType",
+    "SinkSpec",
+    "SinkLoggerConfig",
+    "SinkEnvironmentConfig",
+    "development_sink_config",
+    "production_sink_config",
+    "microservices_sink_config",
+    "high_performance_sink_config",
+    "create_sink_logger_config",
+    
+    # ---- LEGACY COMPATIBILITY ----
     "FunctionalLogger",
     "BoundLogger",
-    "PerformanceLogger",
     "create_logger",
     "create_structured_logger",
     "create_request_logger",
+    "get_legacy_logger",
+    "get_structured_logger",
+    "get_request_logger",
+    "setup_logging",
+    "set_log_level",
+    "set_request_context",
+    "set_user_context",
+    "set_custom_context",
+    "clear_request_context",
+    "configure_colors",
+    "enable_bright_colors",
+    "disable_colors",
+    "create_custom_logger",
+    "PerformanceLogger",
+    "get_performance_logger",
 ]
