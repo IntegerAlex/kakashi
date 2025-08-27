@@ -45,64 +45,62 @@ Logs per second:
 
 | Library | Basic Throughput | Concurrent | Structured | Memory Impact |
 |---------|------------------|------------|------------|---------------|
-| Kakashi Async | **174,706** | **164,411** | 105,659 | 1.75 MB |
-| Standard Library | 128,842 | 108,602 | 86,791 | 0.125 MB |
-| Kakashi Sync | 100,927 | 48,203 | 66,743 | 0.0 MB |
-| Loguru | 87,406 | 66,782 | 68,855 | 0.0 MB |
-| Structlog | Failed | Failed | Failed | - |
+| Kakashi Async | **160,618** | **164,940** | 98,856 | 1.875 MB |
+| Structlog | 144,459 | 128,622 | 88,687 | 0.000 MB |
+| Standard Library | 124,160 | 115,467 | 85,680 | 0.000 MB |
+| Kakashi Sync | 97,268 | 51,454 | 68,931 | 0.000 MB |
+| Loguru | 81,879 | 93,358 | 63,383 | 0.875 MB |
 
-Note: Structlog failed due to a configuration issue in this test setup.
+### Fair diff vs Kakashi Async
+
+Percent difference relative to Kakashi Async (negative = slower):
+
+| Library | Basic vs KA | Concurrent vs KA | Structured vs KA |
+|---------|-------------:|-----------------:|-----------------:|
+| Structlog | -10.1% | -22.0% | -10.3% |
+| Standard Library | -22.6% | -30.0% | -13.3% |
+| Kakashi Sync | -39.4% | -68.8% | -30.3% |
+| Loguru | -49.0% | -43.4% | -35.9% |
 
 ## What This Means
 
 ### Kakashi Async is the Winner in These Tests
 
-- ~35% faster than standard library in basic throughput
-- ~51% faster than standard library under concurrent load
-- Maintained high performance (164K vs 174K logs/sec) even with 16 concurrent threads
+- Leads basic throughput and concurrent performance
+- Maintains high performance (\~165K logs/sec) even with 16 concurrent threads
 
-### Standard Library Held Its Own
+### Standard Library and Structlog Performed Well
 
-Python's built-in logging performed well, coming in second. It's a solid choice if you prefer zero external dependencies.
+- Structlog and the standard library posted strong basic throughput; standard lib remains a solid zero-deps choice
 
 ### Concurrent Performance Varies
 
-- Kakashi Async: Minimal performance drop (174K → 164K)
-- Standard Library: Moderate drop (128K → 108K)
-- Kakashi Sync: Significant drop (100K → 48K)
-- Loguru: Notable drop (87K → 66K)
+- Kakashi Async: Minimal performance drop between basic and concurrent
+- Structlog / Standard: Moderate drop
+- Kakashi Sync / Loguru: Larger drops under concurrency
 
 ### Thread Consistency
 
 Measured by ratio of min/max thread times (higher is more consistent):
+- Kakashi Sync: ~0.90
+- Structlog: ~0.39
+- Kakashi Async: ~0.25
+- Standard Library: ~0.27
+- Loguru: ~0.18
 
-- Kakashi Sync: ~0.85 (most consistent)
-- Standard Library: ~0.42
-- Kakashi Async: ~0.23
-- Loguru: ~0.17
+## Structured Logging Overhead (from this run)
 
-## Why Kakashi Async Performed Best Here
-
-1. Async queue design that avoids blocking the calling thread
-2. Less contention with multiple concurrent threads
-3. Efficient message processing for both simple and structured logs
-
-Trade-off: slightly higher memory usage (~1.75MB), which is acceptable for most services.
-
-## Structured Logging Overhead
-
-All libraries showed overhead with structured data:
-
-- Standard Library: ~+50% overhead
-- Kakashi Async: ~+89% overhead
-- Kakashi Sync: ~+41% overhead
-- Loguru: ~+21% overhead (lowest overhead here)
+- Kakashi Async: ~+98% overhead
+- Kakashi Sync: ~+49% overhead
+- Standard Library: ~+27% overhead
+- Loguru: ~+19% overhead
+- Structlog: ~+66% overhead
 
 ## Recommendation (Based on This Test)
 
 - High-throughput services: Kakashi Async
 - Simple apps: Standard library
-- Heavy structured logging: Consider Loguru
+- Heavy structured logging: Consider trade-offs; Loguru showed lower overhead in this run
 - Avoid Kakashi Sync for heavily concurrent workloads
 
 ## Limitations
@@ -110,7 +108,6 @@ All libraries showed overhead with structured data:
 - Single machine, single OS and CPU
 - Specific message patterns and concurrency
 - No network writers (null handlers)
-- Structlog omitted due to config issue
 
 ## Conclusion
 
