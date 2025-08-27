@@ -47,8 +47,14 @@ const config: Config = {
           // Edit URL points to repository documentation directory
           editUrl: 'https://github.com/IntegerAlex/kakashi/tree/main/documentation',
         },
-        // Disable blog by default; can be re-enabled and curated later
-        blog: false,
+        // Enable blog
+        blog: {
+          showReadingTime: true,
+          postsPerPage: 10,
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
+          editUrl: 'https://github.com/IntegerAlex/kakashi/tree/main/documentation',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -74,6 +80,7 @@ const config: Config = {
       },
       items: [
         { type: 'docSidebar', sidebarId: 'mainSidebar', position: 'left', label: 'Docs' },
+        { to: '/blog', label: 'Blog', position: 'left' },
         { href: 'https://pypi.org/project/kakashi/', label: 'PyPI', position: 'right' },
         { href: 'https://github.com/IntegerAlex/kakashi', label: 'GitHub', position: 'right' },
       ],
@@ -98,6 +105,7 @@ const config: Config = {
           title: 'More',
           items: [
             { label: 'Repository', href: 'https://github.com/IntegerAlex/kakashi' },
+            { label: 'Blog', to: '/blog' },
           ],
         },
       ],
