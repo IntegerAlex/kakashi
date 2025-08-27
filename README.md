@@ -9,7 +9,6 @@
 [![GitHub Stars](https://img.shields.io/github/stars/IntegerAlex/kakashi)](https://github.com/IntegerAlex/kakashi/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/IntegerAlex/kakashi)](https://github.com/IntegerAlex/kakashi/issues)
 
-
 A modern, high-performance logging library designed for production applications that require both high throughput and excellent concurrency scaling.
 
 ## 🚀 Features
@@ -198,20 +197,37 @@ This will test:
 - Adaptive buffer sizing
 - Reference counting for lifecycle management
 
-## 🚨 Migration from v1.x
+## 🚨 Migration from v0.1.x
 
-The v2.0 release maintains backward compatibility while providing significant performance improvements:
+The v0.2.0 release maintains backward compatibility while providing significant performance improvements:
 
 ```python
-# Old v1.x code (still works)
+# Old v0.1.x code (still works)
 from kakashi import setup, get_logger
 setup("production")
 logger = get_logger(__name__)
 
-# New v2.0 code (recommended)
+# New v0.2.0 code (recommended)
 from kakashi import get_logger
 logger = get_logger(__name__)  # Auto-configuration
 ```
+
+## 🧭 Roadmap & Collaboration
+
+We are looking for collaborators to help build the next evolution of Kakashi:
+
+- Cloud log dump and long-term storage integrations (S3/GCS/Azure Blob, Kinesis, Kafka)
+- Scalable log analysis pipelines (batch + streaming) with enrichment and alerting
+- Incident reporting (SLOs/SLIs, error budgets, paging hooks, RCA helpers)
+- First-class observability dashboards (Grafana/Loki, Kibana, Datadog, custom UI)
+
+If you’re interested in shaping these capabilities, please:
+
+- Open a discussion with your proposal and interests
+- File an issue with [area:roadmap] label
+- Or reach out via GitHub to coordinate design/ownership
+
+---
 
 ## 🤝 Contributing
 
