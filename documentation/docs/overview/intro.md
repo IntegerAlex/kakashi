@@ -11,7 +11,7 @@ Kakashi is a **professional high-performance Python logging library** designed f
 - **Throughput**: 56,310+ logs/sec (3.1x faster than standard library)
 - **Concurrency**: 1.17x scaling (adding threads improves performance)
 - **Async**: 169,074 logs/sec (9.3x faster than standard library)
-- **Memory**: <0.02MB usage (efficient buffer management)
+- **Memory**: &lt;0.02MB usage (efficient buffer management)
 
 ## 🎯 Key Capabilities
 

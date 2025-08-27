@@ -444,7 +444,7 @@ def benchmark_throughput():
    - Performance: Linear scaling
 
 3. **Memory Targets**
-   - Peak usage: <0.05MB
+   - Peak usage: &lt;0.05MB
    - No memory leaks
    - Predictable growth
 

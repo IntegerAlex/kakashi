@@ -13,12 +13,12 @@ Kakashi is designed for **production-grade high-performance logging** with minim
 
 | Configuration | Throughput (logs/sec) | Concurrency Scaling | Memory Usage | Notes |
 |--------------|----------------------|-------------------|--------------|-------|
-| **Kakashi Basic** | **56,310** | N/A | <0.02MB | **3.1x faster than stdlib** |
-| **Kakashi Concurrent** | **66,116** | **1.17x** | <0.02MB | **Adding threads improves performance** |
-| **Kakashi Async** | **169,074** | N/A | <0.02MB | **9.3x faster than stdlib** |
-| Standard Library | 18,159 | 0.59x | <0.01MB | Python built-in |
-| Structlog | 12,181 | 0.47x | <0.01MB | Production ready |
-| Loguru | 14,690 | 0.46x | <0.01MB | Feature rich |
+| **Kakashi Basic** | **56,310** | N/A | &lt;0.02MB | **3.1x faster than stdlib** |
+| **Kakashi Concurrent** | **66,116** | **1.17x** | &lt;0.02MB | **Adding threads improves performance** |
+| **Kakashi Async** | **169,074** | N/A | &lt;0.02MB | **9.3x faster than stdlib** |
+| Standard Library | 18,159 | 0.59x | &lt;0.01MB | Python built-in |
+| Structlog | 12,181 | 0.47x | &lt;0.01MB | Production ready |
+| Loguru | 14,690 | 0.46x | &lt;0.01MB | Feature rich |
 
 #### Memory Usage
 
@@ -26,8 +26,8 @@ Kakashi is designed for **production-grade high-performance logging** with minim
 |-----------|---------------|-------|
 | LogRecord | 150-300 bytes | Optimized for minimal allocation |
 | Thread-local buffer | 1-2KB | Efficient batch processing |
-| Async queue | <0.02MB | Background worker optimization |
-| Total overhead | <0.05MB | Production-ready memory footprint |
+| Async queue | &lt;0.02MB | Background worker optimization |
+| Total overhead | &lt;0.05MB | Production-ready memory footprint |
 
 ### Hot Path Optimization
 
@@ -135,124 +135,6 @@ base_context = LogContext(service_name="api", version="1.0.0")
 # These records share the base context in memory
 record1 = LogRecord(..., context=base_context.with_custom(user_id="123"))
 record2 = LogRecord(..., context=base_context.with_custom(user_id="456"))
-```
-
-#### Object Pooling
-
-For extremely high-throughput scenarios, consider object pooling:
-
-```python
-class LogRecordPool:
-    """Object pool for LogRecord instances."""
-    
-    def __init__(self, size: int = 1000):
-        self.pool = []
-        self.size = size
-    
-    def get_record(self, **kwargs) -> LogRecord:
-        if self.pool:
-            record = self.pool.pop()
-            return record.with_fields(**kwargs)
-        return LogRecord(**kwargs)
-    
-    def return_record(self, record: LogRecord) -> None:
-        if len(self.pool) < self.size:
-            self.pool.append(record.clear_fields())
-```
-
-### I/O Optimization
-
-#### Batched Writes
-
-Use batched writes to reduce I/O overhead:
-
-```python
-class BatchedFileWriter:
-    """Writer that batches multiple logs before writing."""
-    
-    def __init__(self, file_path: Path, batch_size: int = 100):
-        self.file_path = file_path
-        self.batch_size = batch_size
-        self.buffer = []
-    
-    def write(self, message: str) -> None:
-        self.buffer.append(message)
-        if len(self.buffer) >= self.batch_size:
-            self._flush()
-    
-    def _flush(self) -> None:
-        with open(self.file_path, 'a') as f:
-            f.write('\n'.join(self.buffer) + '\n')
-        self.buffer.clear()
-```
-
-#### Async I/O
-
-Use async I/O for non-blocking writes:
-
-```python
-import asyncio
-import aiofiles
-
-async def async_file_writer(file_path: Path, message: str) -> None:
-    """Non-blocking file writer."""
-    async with aiofiles.open(file_path, 'a') as f:
-        await f.write(message + '\n')
-        await f.fsync()  # Ensure data is written
-```
-
-### CPU Optimization
-
-#### Formatter Performance
-
-Choose formatters based on performance requirements:
-
-```python
-# Fastest: Simple text formatter
-def fast_text_formatter(record: LogRecord) -> str:
-    return f"{record.timestamp} {record.level.name} {record.message}"
-
-# Fast: Optimized JSON formatter
-def optimized_json_formatter(record: LogRecord) -> str:
-    # Pre-compiled format strings and minimal allocations
-    return FAST_JSON_TEMPLATE.format(
-        timestamp=record.timestamp,
-        level=record.level.name,
-        message=record.message
-    )
-
-# Slower: Full-featured JSON formatter with all fields
-def complete_json_formatter(record: LogRecord) -> str:
-    return json.dumps({
-        'timestamp': record.timestamp,
-        'level': record.level.name,
-        'logger': record.logger_name,
-        'message': record.message,
-        'context': record.context.__dict__ if record.context else None,
-        'extra': record.extra_fields
-    })
-```
-
-#### Enricher Performance
-
-Order enrichers by cost (cheap first):
-
-```python
-config = PipelineConfig(
-    enrichers=(
-        # Fast enrichers first
-        timestamp_enricher,        # Just sets time.time()
-        level_enricher,           # Simple field copy
-        
-        # Moderate cost enrichers
-        context_enricher,         # Thread-local lookup
-        thread_enricher,          # System call
-        
-        # Expensive enrichers last
-        source_location_enricher, # Stack inspection
-        hostname_enricher,        # Network lookup (cached)
-    )
-)
 ```
 
 ### Profiling and Monitoring

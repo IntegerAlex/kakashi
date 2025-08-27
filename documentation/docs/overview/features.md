@@ -8,7 +8,7 @@ title: Features
 - **High Throughput**: 56,310+ logs/sec (3.1x faster than standard library)
 - **Superior Concurrency**: 1.17x scaling (adding threads improves performance)
 - **Async Excellence**: 169,074 logs/sec (9.3x faster than standard library)
-- **Memory Efficient**: <0.02MB memory usage for async operations
+- **Memory Efficient**: &lt;0.02MB memory usage for async operations
 
 ## 🏗️ Architecture Features
 

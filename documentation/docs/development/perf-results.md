@@ -10,7 +10,7 @@ Below are the latest **production-ready performance results** from the Kakashi p
 - **Throughput**: 56,310+ logs/sec (3.1x faster than standard library)
 - **Concurrency Scaling**: 1.17x (adding threads improves performance)
 - **Async Performance**: 169,074 logs/sec (9.3x faster than standard library)
-- **Memory Efficiency**: <0.02MB memory usage for async operations
+- **Memory Efficiency**: &lt;0.02MB memory usage for async operations
 
 ## 📊 Benchmark Results
 
@@ -35,15 +35,15 @@ Below are the latest **production-ready performance results** from the Kakashi p
 
 | Test | Memory Usage (Δ MB) | Peak Memory (MB) | Efficiency |
 |------|----------------------|------------------|------------|
-| **Kakashi Basic** | <0.02 | <0.05 | **Excellent** |
-| **Kakashi Async** | <0.02 | <0.05 | **Excellent** |
-| **Kakashi Concurrent** | <0.02 | <0.05 | **Excellent** |
+| **Kakashi Basic** | &lt;0.02 | &lt;0.05 | **Excellent** |
+| **Kakashi Async** | &lt;0.02 | &lt;0.05 | **Excellent** |
+| **Kakashi Concurrent** | &lt;0.02 | &lt;0.05 | **Excellent** |
 
 ## 🎯 Key Performance Insights
 
 - **Superior Concurrency**: Kakashi's 1.17x scaling means adding threads improves performance
 - **Async Excellence**: 169K logs/sec demonstrates true asynchronous processing
-- **Memory Efficiency**: Consistent <0.02MB memory usage across all scenarios
+- **Memory Efficiency**: Consistent &lt;0.02MB memory usage across all scenarios
 - **Production Ready**: All metrics exceed production performance targets
 
 ## ⚖️ Legal Disclaimer
