@@ -19,17 +19,20 @@ My project needs to handle a lot of log messages — around 50,000+ per second d
 I wrote a simple benchmark script that tests three scenarios:
 
 ### 1. Basic Throughput Test
+
 - Logs 100,000 messages as fast as possible
 - Uses realistic message templates like "User user_1234 completed action login in 45.67ms"
 - Measures logs per second and memory usage
 
 ### 2. Concurrent Performance Test
+
 - Runs 16 threads simultaneously
 - Each thread logs 10,000 messages (160,000 total)
 - Tests how well libraries handle multiple threads writing logs at the same time
 - Measures scaling efficiency and thread consistency
 
 ### 3. Structured Logging Overhead Test
+
 - Compares simple string messages vs structured data with fields
 - Tests the performance cost of adding structured data like user_id, request_id, etc.
 - Measures the overhead percentage
@@ -72,6 +75,7 @@ Python's built-in logging performed well, coming in second. It's a solid choice 
 ### Thread Consistency
 
 Measured by ratio of min/max thread times (higher is more consistent):
+
 - Kakashi Sync: ~0.85 (most consistent)
 - Standard Library: ~0.42
 - Kakashi Async: ~0.23
@@ -88,6 +92,7 @@ Trade-off: slightly higher memory usage (~1.75MB), which is acceptable for most 
 ## Structured Logging Overhead
 
 All libraries showed overhead with structured data:
+
 - Standard Library: ~+50% overhead
 - Kakashi Async: ~+89% overhead
 - Kakashi Sync: ~+41% overhead
