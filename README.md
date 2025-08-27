@@ -8,7 +8,7 @@
 [![PyPI License](https://img.shields.io/pypi/l/kakashi)](https://github.com/IntegerAlex/kakashi/blob/main/LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/IntegerAlex/kakashi)](https://github.com/IntegerAlex/kakashi/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/IntegerAlex/kakashi)](https://github.com/IntegerAlex/kakashi/issues)
-[![GitHub Discussions](https://img.shields.io/github/discussions/IntegerAlex/kakashi)](https://github.com/IntegerAlex/kakashi/discussions)
+
 
 A modern, high-performance logging library designed for production applications that require both high throughput and excellent concurrency scaling.
 
