@@ -157,11 +157,13 @@ This will test:
 ## 🎯 Use Cases
 
 ### High-Throughput Applications
+
 - **API Services**: Handle thousands of requests per second
 - **Data Processing**: Log millions of events efficiently
 - **Real-time Systems**: Minimal latency logging
 
 ### Production Environments
+
 - **Microservices**: Structured logging with context
 - **Distributed Systems**: Async logging for scalability
 - **Cloud-Native Apps**: Memory-efficient operation
@@ -169,18 +171,21 @@ This will test:
 ## 🔍 Performance Characteristics
 
 ### Throughput Optimization
+
 - Thread-local buffer management
 - Pre-computed level checks
 - Direct I/O operations
 - Minimal object allocation
 
 ### Concurrency Optimization
+
 - Lock-free hot paths
 - Thread-local caching
 - Batch processing
 - Cache-line optimization
 
 ### Memory Optimization
+
 - Buffer pooling and reuse
 - Zero-copy operations where possible
 - Adaptive buffer sizing
@@ -209,31 +214,24 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-- **Documentation**: [docs.kakashi.dev](https://docs.kakashi.dev)
-- **Issues**: [GitHub Issues](https://github.com/kakashi/logging/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/kakashi/logging/discussions)
-
-## 🙏 Acknowledgments
-
-Thanks to all contributors who helped make Kakashi a production-ready logging solution.
-
 ## ⚖️ Legal Disclaimers
 
 ### Performance Claims
+
 - All performance metrics and benchmark results are provided for informational purposes only
 - Performance may vary significantly based on system configuration, workload patterns, and environmental factors
 - These results are not guarantees of performance and should not be used for commercial claims without independent verification
 - Kakashi makes no warranties regarding performance characteristics or suitability for specific use cases
 
 ### Benchmark Results
+
 - Benchmark results are based on specific test conditions and may not reflect real-world performance
 - Comparisons with other libraries are provided for context only and should not be considered definitive
 - Users are encouraged to conduct their own performance testing in their specific environments
 - Results may vary between different Python versions, operating systems, and hardware configurations
 
 ### Usage and Liability
+
 - Kakashi is provided "as is" without warranty of any kind
 - Users assume all risk associated with the use of this software
 - The authors and contributors are not liable for any damages arising from the use of Kakashi
@@ -241,4 +239,4 @@ Thanks to all contributors who helped make Kakashi a production-ready logging so
 
 ---
 
-**Kakashi v2.0.0** - Professional High-Performance Logging for Python
+**Kakashi v0.2.0** - Professional High-Performance Logging for Python

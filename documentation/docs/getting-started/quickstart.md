@@ -60,4 +60,7 @@ from kakashi import shutdown_async_logging
 shutdown_async_logging()
 ```
 
+---
 
+*Last updated: 2025-08-27*
+*Contributors: [IntegerAlex]*

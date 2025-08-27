@@ -53,14 +53,29 @@ class PipelineConfig:
 ```python
 @dataclass(frozen=True)
 class LogRecord:
+    # Core fields (always present)
     timestamp: float
     level: LogLevel
     logger_name: str
     message: str
-    context: Optional[LogContext] = None
-    exception_info: Optional[Tuple] = None
-    source_location: Optional[SourceLocation] = None
-    extra_fields: Optional[Dict[str, Any]] = None
+    
+    # Optional structured fields
+    fields: Optional[Dict[str, Any]] = None  # Key-value pairs for structured logging
+    context: Optional[LogContext] = None     # Contextual information
+    
+    # Exception information
+    exception: Optional[Exception] = None
+    exception_traceback: Optional[str] = None
+    
+    # Source location (for debugging)
+    module: Optional[str] = None
+    function: Optional[str] = None
+    line_number: Optional[int] = None
+    
+    # Threading information
+    thread_id: Optional[int] = None
+    thread_name: Optional[str] = None
+    process_id: Optional[int] = None
 ```
 
 #### LogContext
@@ -91,10 +106,10 @@ For high-throughput scenarios, Kakashi provides an optional async backend:
 
 ```python
 class AsyncPipeline:
-    async def process(self, record: LogRecord) -> None:
-        # Non-blocking I/O operations
+    def process(self, record: LogRecord) -> None:
+        # Non-blocking I/O operations through async backend
         # Batched writes for efficiency
-        # Backpressure handling
+        # Fallback to sync pipeline if async fails
 ```
 
 ### Thread Safety

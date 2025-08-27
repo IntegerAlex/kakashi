@@ -260,18 +260,13 @@ config = PipelineConfig(
 #### Built-in Performance Monitoring
 
 ```python
-from kakashi.core.performance import PerformanceMonitor
+from kakashi.core.async_interface import get_async_stats
 
-monitor = PerformanceMonitor()
-
-# Monitor pipeline performance
-with monitor.time_operation('pipeline_process'):
-    pipeline.process(record)
-
-# Get performance statistics
-stats = monitor.get_stats()
-print(f"Average process time: {stats.avg_process_time:.3f}ms")
-print(f"Throughput: {stats.throughput:.0f} logs/sec")
+# Monitor async pipeline performance
+stats = get_async_stats()
+print(f"Queue size: {stats['queue_size']}")
+print(f"Messages processed: {stats['messages_enqueued']}")
+print(f"Throughput: {stats['messages_enqueued'] / elapsed_time:.0f} msg/sec")
 ```
 
 #### Custom Profiling
@@ -498,3 +493,8 @@ def debug_performance_issue():
     
     print(stream.getvalue())
 ```
+
+---
+
+*Last updated: 2025-08-27*
+*Contributors: [IntegerAlex]*

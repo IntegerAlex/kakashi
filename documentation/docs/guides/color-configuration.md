@@ -17,5 +17,10 @@ Custom config:
 ```python
 from kakashi import configure_colors
 
-configure_colors(bright_colors=True, colored_file_logs=False)
+configure_colors(use_colors=True, bright_colors=True)
 ```
+
+---
+
+*Last updated: 2025-08-27*
+*Contributors: [IntegerAlex]*

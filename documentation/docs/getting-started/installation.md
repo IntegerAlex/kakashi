@@ -21,4 +21,7 @@ pip install kakashi[performance]
 pip install kakashi[all]
 ```
 
+---
 
+*Last updated: 2025-08-27*
+*Contributors: [IntegerAlex]*

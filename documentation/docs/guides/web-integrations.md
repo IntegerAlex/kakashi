@@ -7,23 +7,28 @@ FastAPI:
 
 ```python
 from fastapi import FastAPI
-import kakashi
+from kakashi.integrations.fastapi_integration import setup_fastapi_enterprise
 
 app = FastAPI()
-kakashi.setup_fastapi(app, service_name="my-api", environment="production")
+setup_fastapi_enterprise(app, service_name="my-api", environment="production")
 ```
 
 Flask:
 
 ```python
 from flask import Flask
-import kakashi
+from kakashi.integrations.flask_integration import setup_flask_enterprise
 
 app = Flask(__name__)
-kakashi.setup_flask(app)
+setup_flask_enterprise(app)
 ```
 
 Django:
 
-Call `kakashi.setup_django()` during startup and include URLs from
+Call `kakashi.integrations.django_integration.setup_django_enterprise()` during startup and include URLs from
 `kakashi.integrations.django_integration.urlpatterns`.
+
+---
+
+*Last updated: 2025-08-27*
+*Contributors: [IntegerAlex]*
