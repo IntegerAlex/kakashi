@@ -12,7 +12,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: '🚀 Superior Performance',
-    imageSrc: require('@site/static/img/socialcard.png').default,
+    imageSrc: require('@site/static/img/SuperiorPerformance.gif').default,
     description: (
       <>
         Kakashi achieves <strong>56,310+ logs/sec</strong> with <strong>1.17x concurrency scaling</strong>.
@@ -22,7 +22,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: '⚡ True Async Logging',
-    imageSrc: require('@site/static/img/socialcard.png').default,
+    imageSrc: require('@site/static/img/TrueAsyncLogging.gif').default,
     description: (
       <>
         Background worker threads deliver <strong>169,074 logs/sec</strong> with intelligent batch processing.
@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: '🏗️ Professional Architecture',
-    imageSrc: require('@site/static/img/socialcard.png').default,
+    imageSrc: require('@site/static/img/ProfessionalArchitecture.jpeg').default,
     description: (
       <>
         Clean, maintainable code with thread-local buffering and efficient memory management.
