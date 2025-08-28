@@ -142,6 +142,7 @@ html[data-theme] {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(229, 57, 57, 0.3);
+  text-decoration: none !important;
 }
 
 .button--secondary:hover {
@@ -331,7 +332,7 @@ h1, h2, h3, h4, h5, h6 {
   padding-bottom: 8px;
 }
 
-h1::after, h2::after, h3::after {
+/* h1::after, h2::after, h3::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -339,7 +340,7 @@ h1::after, h2::after, h3::after {
   width: 60px;
   height: 2px;
   background-color: #E53939;
-}
+} */
 
 /* Enhanced Blockquotes */
 blockquote {
@@ -439,7 +440,7 @@ li::marker {
 
 /* Enhanced Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -448,7 +449,7 @@ li::marker {
 
 ::-webkit-scrollbar-thumb {
   background: #E53939;
-  border-radius: 6px;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
