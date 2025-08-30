@@ -119,5 +119,5 @@ def kakashi_async_logger():
 @pytest.fixture(scope="function")
 def kakashi_structured_logger():
     """Create a fresh Kakashi structured logger for each test."""
-    from kakashi import get_structured_logger
-    return get_structured_logger("test_structured_logger", service="test-service")
+    from kakashi.core import create_structured_logger
+    return create_structured_logger("test_structured_logger")

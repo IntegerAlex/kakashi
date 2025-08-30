@@ -195,8 +195,8 @@ class StructuredLogger:
                 entry.version = self.base_context.version
             if self.base_context.environment:
                 entry.environment = self.base_context.environment
-            if self.base_context.trace_id:
-                entry.trace_id = self.base_context.trace_id
+            if self.base_context.request_id:
+                entry.trace_id = self.base_context.request_id  # Use request_id as trace_id
             if self.base_context.user_id:
                 entry.user_id = self.base_context.user_id
         
@@ -238,9 +238,9 @@ class StructuredLogger:
             message=message,
             fields=entry.fields,
             context=self.base_context,
-            source_file=entry.source_file,
-            source_line=entry.source_line,
-            source_function=entry.source_function,
+            module=entry.source_file,
+            function=entry.source_function,
+            line_number=entry.source_line,
             thread_id=entry.thread_id,
             thread_name=entry.thread_name,
             logger_name=self.name
