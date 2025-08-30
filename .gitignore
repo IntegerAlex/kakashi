@@ -159,7 +159,7 @@ cython_debug/
 .idea/
 
 # Performance test files and results (not committed)
-performance_tests/
+
 performance_results.json
 *.log
 logs/
