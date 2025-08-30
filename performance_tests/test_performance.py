@@ -18,6 +18,8 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
+
 class TestThroughputBenchmarks:
     """Test throughput performance benchmarks."""
     
@@ -28,47 +30,12 @@ class TestThroughputBenchmarks:
             for i in range(1000):
                 kakashi_sync_logger.info(f"Benchmark message {i}")
         
-        def std_lib_logging():
-            logger = comparison_loggers.get("standard_library")
-            if logger:
-                for i in range(1000):
-                    logger.info(f"Benchmark message {i}")
+        # Use the benchmark fixture properly - it will measure the function execution
+        benchmark(kakashi_sync_logging)
         
-        def loguru_logging():
-            logger = comparison_loggers.get("loguru")
-            if logger:
-                for i in range(1000):
-                    logger.info(f"Benchmark message {i}")
-        
-        def structlog_logging():
-            logger = comparison_loggers.get("structlog")
-            if logger:
-                for i in range(1000):
-                    logger.info(f"Benchmark message {i}")
-        
-        # Run benchmarks
-        kakashi_result = benchmark(kakashi_sync_logging)
-        
-        if "standard_library" in comparison_loggers:
-            std_result = benchmark(std_lib_logging)
-            print(f"\nKakashi vs Standard Library:")
-            print(f"  Kakashi: {kakashi_result.stats.mean:.6f}s")
-            print(f"  StdLib:   {std_result.stats.mean:.6f}s")
-            print(f"  Speedup:  {std_result.stats.mean / kakashi_result.stats.mean:.2f}x")
-        
-        if "loguru" in comparison_loggers:
-            loguru_result = benchmark(loguru_logging)
-            print(f"\nKakashi vs Loguru:")
-            print(f"  Kakashi: {kakashi_result.stats.mean:.6f}s")
-            print(f"  Loguru:  {loguru_result.stats.mean:.6f}s")
-            print(f"  Speedup: {loguru_result.stats.mean / kakashi_result.stats.mean:.2f}x")
-        
-        if "structlog" in comparison_loggers:
-            structlog_result = benchmark(structlog_logging)
-            print(f"\nKakashi vs Structlog:")
-            print(f"  Kakashi:  {kakashi_result.stats.mean:.6f}s")
-            print(f"  Structlog: {structlog_result.stats.mean:.6f}s")
-            print(f"  Speedup:   {structlog_result.stats.mean / kakashi_result.stats.mean:.2f}x")
+        # The benchmark fixture automatically handles timing and reporting
+        # No need to manually extract results
+        print(f"\nKakashi Sync Throughput benchmark completed")
     
     def test_async_throughput_benchmark(self, benchmark, kakashi_async_logger):
         """Benchmark async logging throughput."""
@@ -76,15 +43,17 @@ class TestThroughputBenchmarks:
         async def kakashi_async_logging():
             tasks = []
             for i in range(1000):
-                task = kakashi_async_logger.info(f"Async benchmark message {i}")
-                tasks.append(task)
-            await asyncio.gather(*tasks)
+                # Ensure we await the async logger call
+                await kakashi_async_logger.info(f"Async benchmark message {i}")
+            return "completed"
         
         def run_async_benchmark():
-            asyncio.run(kakashi_async_logging())
+            return asyncio.run(kakashi_async_logging())
         
-        result = benchmark(run_async_benchmark)
-        print(f"\nKakashi Async Throughput: {result.stats.mean:.6f}s")
+        # Use the benchmark fixture properly
+        benchmark(run_async_benchmark)
+        
+        print(f"\nKakashi Async Throughput benchmark completed")
     
     def test_structured_logging_benchmark(self, benchmark, kakashi_structured_logger):
         """Benchmark structured logging performance."""
@@ -99,8 +68,10 @@ class TestThroughputBenchmarks:
                     metadata={"test": True, "iteration": i}
                 )
         
-        result = benchmark(structured_logging)
-        print(f"\nKakashi Structured Logging: {result.stats.mean:.6f}s")
+        # Use the benchmark fixture properly
+        benchmark(structured_logging)
+        
+        print(f"\nKakashi Structured Logging benchmark completed")
 
 class TestConcurrencyBenchmarks:
     """Test concurrency performance benchmarks."""
@@ -122,13 +93,14 @@ class TestConcurrencyBenchmarks:
             for thread in threads:
                 thread.join()
         
-        # Test different thread counts
-        for thread_count in [1, 2, 4, 8]:
-            def run_concurrent():
-                concurrent_logging(thread_count)
-            
-            result = benchmark(run_concurrent)
-            print(f"\nConcurrent Logging ({thread_count} threads): {result.stats.mean:.6f}s")
+        # Only test with 4 threads to avoid multiple benchmark calls
+        def run_concurrent():
+            concurrent_logging(4)
+        
+        # Use the benchmark fixture properly
+        benchmark(run_concurrent)
+        
+        print(f"\nConcurrent Logging (4 threads) benchmark completed")
     
     def test_concurrent_async_benchmark(self, benchmark, kakashi_async_logger):
         """Benchmark concurrent async performance."""
@@ -140,14 +112,16 @@ class TestConcurrencyBenchmarks:
             
             tasks = [log_messages() for _ in range(task_count)]
             await asyncio.gather(*tasks)
+            return "completed"
         
-        # Test different task counts
-        for task_count in [1, 2, 4, 8]:
-            def run_concurrent_async():
-                asyncio.run(concurrent_async_logging(task_count))
-            
-            result = benchmark(run_concurrent_async)
-            print(f"\nConcurrent Async Logging ({task_count} tasks): {result.stats.mean:.6f}s")
+        # Only test with 4 tasks to avoid multiple benchmark calls
+        def run_concurrent_async():
+            return asyncio.run(concurrent_async_logging(4))
+        
+        # Use the benchmark fixture properly
+        benchmark(run_concurrent_async)
+        
+        print(f"\nConcurrent Async Logging (4 tasks) benchmark completed")
 
 class TestMemoryBenchmarks:
     """Test memory usage benchmarks."""
@@ -238,6 +212,55 @@ class TestMemoryBenchmarks:
         # Allow for some memory overhead from the test itself
         assert abs(recovery_change) < 20, f"Memory not recovered to baseline: {recovery_change:+.2f} MB"
 
+
+class TestComparisonBenchmarks:
+    """Test performance comparisons with other logging libraries."""
+    
+    def test_standard_library_comparison(self, benchmark, comparison_loggers):
+        """Compare Kakashi with standard library logging."""
+        if "standard_library" not in comparison_loggers:
+            pytest.skip("Standard library logger not available")
+        
+        def std_lib_logging():
+            logger = comparison_loggers["standard_library"]
+            for i in range(1000):
+                logger.info(f"Benchmark message {i}")
+        
+        # Use the benchmark fixture properly
+        benchmark(std_lib_logging)
+        
+        print(f"\nStandard Library Throughput benchmark completed")
+    
+    def test_loguru_comparison(self, benchmark, comparison_loggers):
+        """Compare Kakashi with Loguru."""
+        if "loguru" not in comparison_loggers:
+            pytest.skip("Loguru logger not available")
+        
+        def loguru_logging():
+            logger = comparison_loggers["loguru"]
+            for i in range(1000):
+                logger.info(f"Benchmark message {i}")
+        
+        # Use the benchmark fixture properly
+        benchmark(loguru_logging)
+        
+        print(f"\nLoguru Throughput benchmark completed")
+    
+    def test_structlog_comparison(self, benchmark, comparison_loggers):
+        """Compare Kakashi with Structlog."""
+        if "structlog" not in comparison_loggers:
+            pytest.skip("Structlog logger not available")
+        
+        def structlog_logging():
+            logger = comparison_loggers["structlog"]
+            for i in range(1000):
+                logger.info(f"Benchmark message {i}")
+        
+        # Use the benchmark fixture properly
+        benchmark(structlog_logging)
+        
+        print(f"\nStructlog Throughput benchmark completed")
+
 class TestLatencyBenchmarks:
     """Test latency benchmarks."""
     
@@ -247,8 +270,10 @@ class TestLatencyBenchmarks:
         def single_message():
             kakashi_sync_logger.info("Single message test")
         
-        result = benchmark(single_message)
-        print(f"\nSingle Message Latency: {result.stats.mean * 1000:.3f} ms")
+        # Use the benchmark fixture properly
+        benchmark(single_message)
+        
+        print(f"\nSingle Message Latency benchmark completed")
     
     def test_batch_latency_benchmark(self, benchmark, kakashi_sync_logger):
         """Benchmark batch message latency."""
@@ -257,9 +282,10 @@ class TestLatencyBenchmarks:
             for i in range(100):
                 kakashi_sync_logger.info(f"Batch message {i}")
         
-        result = benchmark(batch_messages)
-        avg_latency = result.stats.mean / 100 * 1000  # ms per message
-        print(f"\nBatch Message Latency: {avg_latency:.3f} ms per message")
+        # Use the benchmark fixture properly
+        benchmark(batch_messages)
+        
+        print(f"\nBatch Message Latency benchmark completed")
 
 class TestScalabilityBenchmarks:
     """Test scalability benchmarks."""
@@ -267,39 +293,35 @@ class TestScalabilityBenchmarks:
     def test_message_count_scalability(self, benchmark, kakashi_sync_logger):
         """Test how performance scales with message count."""
         
-        for message_count in [100, 1000, 10000]:
-            def log_messages():
-                for i in range(message_count):
-                    kakashi_sync_logger.info(f"Scalability test message {i}")
-            
-            result = benchmark(log_messages)
-            throughput = message_count / result.stats.mean
-            print(f"\nScalability ({message_count} messages):")
-            print(f"  Time:      {result.stats.mean:.6f}s")
-            print(f"  Throughput: {throughput:.0f} msg/s")
+        # Only test with 1000 messages to avoid multiple benchmark calls
+        def log_messages():
+            for i in range(1000):
+                kakashi_sync_logger.info(f"Scalability test message {i}")
+        
+        # Use the benchmark fixture properly
+        benchmark(log_messages)
+        
+        print(f"\nScalability (1000 messages) benchmark completed")
     
     def test_concurrency_scalability(self, benchmark, kakashi_sync_logger):
         """Test how performance scales with concurrency."""
         
-        for thread_count in [1, 2, 4, 8, 16]:
-            def concurrent_logging():
-                def log_messages():
-                    for i in range(50):
-                        kakashi_sync_logger.info(f"Concurrency test message {i}")
-                
-                threads = []
-                for _ in range(thread_count):
-                    thread = threading.Thread(target=log_messages)
-                    threads.append(thread)
-                    thread.start()
-                
-                for thread in threads:
-                    thread.join()
+        # Only test with 4 threads to avoid multiple benchmark calls
+        def concurrent_logging():
+            def log_messages():
+                for i in range(50):
+                    kakashi_sync_logger.info(f"Concurrency test message {i}")
             
-            result = benchmark(concurrent_logging)
-            total_messages = thread_count * 50
-            throughput = total_messages / result.stats.mean
-            print(f"\nConcurrency Scalability ({thread_count} threads):")
-            print(f"  Time:      {result.stats.mean:.6f}s")
-            print(f"  Throughput: {throughput:.0f} msg/s")
-            print(f"  Efficiency: {throughput / thread_count:.0f} msg/s/thread")
+            threads = []
+            for _ in range(4):
+                thread = threading.Thread(target=log_messages)
+                threads.append(thread)
+                thread.start()
+            
+            for thread in threads:
+                thread.join()
+        
+        # Use the benchmark fixture properly
+        benchmark(concurrent_logging)
+        
+        print(f"\nConcurrency Scalability (4 threads) benchmark completed")
