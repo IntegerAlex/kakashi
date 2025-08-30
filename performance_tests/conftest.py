@@ -60,8 +60,11 @@ def comparison_loggers():
         std_logger.addHandler(logging.NullHandler())
         std_logger.propagate = False
         loggers["standard_library"] = std_logger
+        print("✅ Standard library logging available")
+    except ImportError as e:
+        print(f"⚠️  Standard library logging not available: {e}")
     except Exception as e:
-        pytest.skip(f"Standard library logging not available: {e}")
+        print(f"⚠️  Unexpected error setting up standard library logging: {e}")
     
     try:
         # Loguru
@@ -69,8 +72,13 @@ def comparison_loggers():
         logger.remove()
         logger.add(lambda msg: None, level="INFO")
         loggers["loguru"] = logger
+        print("✅ Loguru available")
+    except ImportError:
+        print("⚠️  Loguru not available (not installed)")
+    except ModuleNotFoundError:
+        print("⚠️  Loguru not available (not installed)")
     except Exception as e:
-        pytest.skip(f"Loguru not available: {e}")
+        print(f"⚠️  Unexpected error setting up Loguru: {e}")
     
     try:
         # Structlog
@@ -83,8 +91,16 @@ def comparison_loggers():
             cache_logger_on_first_use=True,
         )
         loggers["structlog"] = structlog.get_logger("structlog_test")
+        print("✅ Structlog available")
+    except ImportError:
+        print("⚠️  Structlog not available (not installed)")
+    except ModuleNotFoundError:
+        print("⚠️  Structlog not available (not installed)")
     except Exception as e:
-        pytest.skip(f"Structlog not available: {e}")
+        print(f"⚠️  Unexpected error setting up Structlog: {e}")
+    
+    if not loggers:
+        print("⚠️  No comparison loggers available - tests will only run against Kakashi")
     
     return loggers
 

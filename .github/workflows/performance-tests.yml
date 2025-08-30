@@ -57,86 +57,86 @@ jobs:
             python-version-short: '312'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('performance_tests/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('performance_tests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential python3-dev
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-dev
 
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install -r performance_tests/requirements.txt
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r performance_tests/requirements.txt
 
-    - name: Build and install Kakashi
-      run: |
-        echo "🔨 Building Kakashi..."
-        pip install -e .
-        echo "✅ Kakashi installed successfully"
+      - name: Build and install Kakashi
+        run: |
+          echo "🔨 Building Kakashi..."
+          pip install -e .
+          echo "✅ Kakashi installed successfully"
 
-    - name: Run API Compatibility Tests
-      run: |
-        echo "🔧 Running API Compatibility Tests..."
-        cd performance_tests
-        python -m pytest test_api_compatibility.py -v --tb=short --junitxml=api-tests-${{ matrix.python-version-short }}.xml
+      - name: Run API Compatibility Tests
+        run: |
+          echo "🔧 Running API Compatibility Tests..."
+          cd performance_tests
+          python -m pytest test_api_compatibility.py -v --tb=short --junitxml=api-tests-${{ matrix.python-version-short }}.xml -c pytest.ini
 
-    - name: Run Performance Benchmark Tests
-      run: |
-        echo "⚡ Running Performance Benchmark Tests..."
-        cd performance_tests
-        python -m pytest test_performance.py -v --benchmark-only --benchmark-sort=mean --junitxml=performance-tests-${{ matrix.python-version-short }}.xml
+      - name: Run Performance Benchmark Tests
+        run: |
+          echo "⚡ Running Performance Benchmark Tests..."
+          cd performance_tests
+          python -m pytest test_performance.py -v --benchmark-only --benchmark-sort=mean --junitxml=performance-tests-${{ matrix.python-version-short }}.xml -c pytest.ini
 
-    - name: Run Stability Tests
-      run: |
-        echo "🛡️ Running Stability Tests..."
-        cd performance_tests
-        python -m pytest test_stability.py -v --tb=short --junitxml=stability-tests-${{ matrix.python-version-short }}.xml
+      - name: Run Stability Tests
+        run: |
+          echo "🛡️ Running Stability Tests..."
+          cd performance_tests
+          python -m pytest test_stability.py -v --tb=short --junitxml=stability-tests-${{ matrix.python-version-short }}.xml -c pytest.ini
 
-    - name: Run Extended Tests (if requested)
-      if: ${{ github.event.inputs.run_extended_tests == 'true' || github.event_name == 'schedule' }}
-      run: |
-        echo "🔬 Running Extended Tests..."
-        cd performance_tests
-        python -m pytest -v --benchmark-only --benchmark-sort=mean --junitxml=extended-tests-${{ matrix.python-version-short }}.xml
+      - name: Run Extended Tests (if requested)
+        if: ${{ github.event.inputs.run_extended_tests == 'true' || github.event_name == 'schedule' }}
+        run: |
+          echo "🔬 Running Extended Tests..."
+          cd performance_tests
+          python -m pytest -v --benchmark-only --benchmark-sort=mean --junitxml=extended-tests-${{ matrix.python-version-short }}.xml -c pytest.ini
 
-    - name: Generate Test Report
-      run: |
-        echo "📊 Generating Test Report..."
-        cd performance_tests
-        python run_tests.py --save-report --report-file=test-report-${{ matrix.python-version-short }}.json
+      - name: Generate Test Report
+        run: |
+          echo "📊 Generating Test Report..."
+          cd performance_tests
+          python run_tests.py --save-report --report-file=test-report-${{ matrix.python-version-short }}.json
 
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results-${{ matrix.python-version-short }}
-        path: |
-          performance_tests/*.xml
-          performance_tests/test-report-*.json
-          performance_tests/.pytest_cache/
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.python-version-short }}
+          path: |
+            performance_tests/*.xml
+            performance_tests/test-report-*.json
+            performance_tests/.pytest_cache/
 
-    - name: Upload Benchmark Results
-      uses: actions/upload-artifact@v3
-      with:
-        name: benchmark-results-${{ matrix.python-version-short }}
-        path: |
-          performance_tests/.benchmarks/
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results-${{ matrix.python-version-short }}
+          path: |
+            performance_tests/.benchmarks/
 
   test-summary:
     name: Test Summary
@@ -144,41 +144,54 @@ jobs:
     needs: performance-test
     if: always()
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Download all test results
-      uses: actions/download-artifact@v3
-      with:
-        path: test-results
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results
 
-    - name: Generate Summary Report
-      run: |
-        echo "📋 Generating Summary Report..."
-        python performance_tests/generate_summary.py test-results/
+      - name: Generate Summary Report
+        run: |
+          echo "📋 Generating Summary Report..."
+          python performance_tests/generate_summary.py test-results/
 
-    - name: Upload Summary Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: summary-report
-        path: |
-          summary-report.md
-          summary-report.json
+      - name: Upload Summary Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: summary-report
+          path: |
+            summary-report.md
+            summary-report.json
 
-    - name: Comment on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const summaryPath = 'summary-report.md';
-          
-          if (fs.existsSync(summaryPath)) {
-            const summary = fs.readFileSync(summaryPath, 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 🚀 Performance Test Results\n\n${summary}`
-            });
-          }
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summaryPath = 'summary-report.md';
+            
+            if (fs.existsSync(summaryPath)) {
+              const summary = fs.readFileSync(summaryPath, 'utf8');
+              
+              // GitHub has a comment size limit of 65,536 characters
+              const MAX_COMMENT_SIZE = 60000; // Leave some buffer
+              
+              let commentBody = `## 🚀 Performance Test Results\n\n`;
+              
+              if (summary.length > MAX_COMMENT_SIZE) {
+                const truncatedSummary = summary.substring(0, MAX_COMMENT_SIZE - 200);
+                commentBody += `${truncatedSummary}\n\n...\n\n*[Report truncated due to size limits. Full report available in artifacts.]*`;
+              } else {
+                commentBody += summary;
+              }
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }

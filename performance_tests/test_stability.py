@@ -219,12 +219,21 @@ class TestMemoryStability:
         print(f"\nMemory Leak Detection Test:")
         print(f"  Baseline memory: {baseline_memory:.2f} MB")
         print(f"  Final memory: {memory_samples[-1]:.2f} MB")
-        print(f"  Total growth: {memory_growth:.2f} MB")
+        print(f"  Memory change: {memory_growth:+.2f} MB")
         print(f"  Memory variance: {memory_variance:.2f} MB")
         print(f"  Memory samples: {[f'{m:.2f}' for m in memory_samples]}")
         
-        # Assertions - allow some memory growth but not excessive
-        assert memory_growth < 50, f"Memory growth too high: {memory_growth:.2f} MB"
+        # Assertions - handle both positive and negative memory changes
+        if memory_growth > 0:
+            # Memory increased - check it's reasonable
+            assert memory_growth < 50, f"Memory growth too high: {memory_growth:.2f} MB"
+        else:
+            # Memory decreased (garbage collection freed memory) - this is good
+            print(f"  ✅ Memory decreased by {abs(memory_growth):.2f} MB (garbage collection working)")
+            # Allow up to 30MB decrease (aggressive garbage collection)
+            assert memory_growth > -30, f"Memory decrease too aggressive: {memory_growth:.2f} MB"
+        
+        # Memory variance should be reasonable regardless of growth direction
         assert memory_variance < 100, f"Memory variance too high: {memory_variance:.2f} MB"
     
     def test_memory_pressure_recovery(self, kakashi_sync_logger):
@@ -262,12 +271,27 @@ class TestMemoryStability:
         print(f"  Baseline memory: {baseline_memory:.2f} MB")
         print(f"  Pressure memory: {pressure_memory:.2f} MB")
         print(f"  Recovery memory: {recovery_memory:.2f} MB")
-        print(f"  Pressure increase: {pressure_memory - baseline_memory:.2f} MB")
-        print(f"  Recovery success: {recovery_memory - baseline_memory:.2f} MB")
+        print(f"  Pressure increase: {pressure_memory - baseline_memory:+.2f} MB")
+        print(f"  Recovery change: {recovery_memory - baseline_memory:+.2f} MB")
         
         # Assertions
-        assert pressure_memory > baseline_memory, "Memory pressure not applied"
-        assert recovery_memory <= baseline_memory + 20, f"Memory not recovered: {recovery_memory:.2f} MB"
+        pressure_increase = pressure_memory - baseline_memory
+        recovery_change = recovery_memory - baseline_memory
+        
+        # Pressure should increase memory usage
+        assert pressure_increase > 0, "Memory pressure not applied"
+        
+        # Recovery should be close to baseline (within 20MB)
+        # Allow for some memory overhead from the test itself
+        # Handle both positive and negative recovery changes
+        if recovery_change > 0:
+            # Memory still above baseline
+            assert recovery_change < 20, f"Memory not recovered to baseline: {recovery_change:+.2f} MB"
+        else:
+            # Memory below baseline (garbage collection freed memory) - this is good
+            print(f"  ✅ Memory recovered below baseline by {abs(recovery_change):.2f} MB (garbage collection working)")
+            # Allow up to 15MB decrease (aggressive garbage collection)
+            assert recovery_change > -15, f"Memory decrease too aggressive: {recovery_change:+.2f} MB"
 
 class TestErrorHandlingStability:
     """Test stability under error conditions."""
@@ -420,7 +444,7 @@ class TestLongRunningStability:
         # Final memory measurement
         gc.collect()
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
-        memory_growth = final_memory - baseline_memory
+        memory_change = final_memory - baseline_memory
         
         throughput = message_count / total_time
         
@@ -430,11 +454,20 @@ class TestLongRunningStability:
         print(f"  Throughput: {throughput:.0f} msg/s")
         print(f"  Baseline memory: {baseline_memory:.2f} MB")
         print(f"  Final memory: {final_memory:.2f} MB")
-        print(f"  Memory growth: {memory_growth:.2f} MB")
+        print(f"  Memory change: {memory_change:+.2f} MB")
         print(f"  Errors: {len(errors)}")
         
         # Assertions
         assert len(errors) == 0, f"Errors occurred: {errors}"
         assert message_count > 1000, f"Too few messages logged: {message_count}"
         assert throughput > 50, f"Throughput too low: {throughput:.0f} msg/s"
-        assert memory_growth < 100, f"Memory growth too high: {memory_growth:.2f} MB"
+        
+        # Handle both positive and negative memory changes
+        if memory_change > 0:
+            # Memory increased - check it's reasonable
+            assert memory_change < 100, f"Memory growth too high: {memory_change:.2f} MB"
+        else:
+            # Memory decreased (garbage collection freed memory) - this is good
+            print(f"  ✅ Memory decreased by {abs(memory_change):.2f} MB (garbage collection working)")
+            # Allow up to 50MB decrease (aggressive garbage collection)
+            assert memory_change > -50, f"Memory decrease too aggressive: {memory_change:.2f} MB"

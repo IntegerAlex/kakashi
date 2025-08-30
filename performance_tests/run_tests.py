@@ -18,18 +18,25 @@ import argparse
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-def run_command(cmd: List[str], description: str) -> Dict[str, Any]:
+def run_command(cmd: List[str], description: str, cwd: str = None, timeout: int = 300) -> Dict[str, Any]:
     """Run a command and return results."""
     print(f"\n🚀 {description}")
     print(f"Command: {' '.join(cmd)}")
+    if cwd:
+        print(f"Working Directory: {cwd}")
     
     start_time = time.time()
     try:
+        # Preserve current environment variables
+        env = os.environ.copy()
+        
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=300  # 5 minute timeout
+            timeout=timeout,
+            cwd=cwd,
+            env=env
         )
         end_time = time.time()
         
@@ -46,8 +53,8 @@ def run_command(cmd: List[str], description: str) -> Dict[str, Any]:
             "success": False,
             "returncode": -1,
             "stdout": "",
-            "stderr": "Command timed out after 300 seconds",
-            "duration": 300,
+            "stderr": f"Command timed out after {timeout} seconds",
+            "duration": timeout,
             "description": description
         }
     except Exception as e:
@@ -68,10 +75,21 @@ def install_dependencies() -> bool:
     if not hasattr(sys, 'real_prefix') and not (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
         print("⚠️  Warning: Not in a virtual environment")
     
+    # Get the directory where this script is located
+    script_dir = Path(__file__).parent
+    requirements_file = script_dir / "requirements.txt"
+    
+    if not requirements_file.exists():
+        print(f"❌ Requirements file not found: {requirements_file}")
+        return False
+    
+    print(f"📁 Using requirements file: {requirements_file}")
+    
     # Install requirements
     result = run_command(
-        [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"],
-        "Installing test dependencies"
+        [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
+        "Installing test dependencies",
+        cwd=str(script_dir)
     )
     
     if not result["success"]:
@@ -85,9 +103,11 @@ def run_api_tests() -> Dict[str, Any]:
     """Run API compatibility tests."""
     print("\n🔧 Running API Compatibility Tests...")
     
+    script_dir = Path(__file__).parent
     result = run_command(
         [sys.executable, "-m", "pytest", "test_api_compatibility.py", "-v", "--tb=short"],
-        "API Compatibility Tests"
+        "API Compatibility Tests",
+        cwd=str(script_dir)
     )
     
     return result
@@ -96,20 +116,24 @@ def run_performance_tests() -> Dict[str, Any]:
     """Run performance benchmark tests."""
     print("\n⚡ Running Performance Benchmark Tests...")
     
+    script_dir = Path(__file__).parent
     result = run_command(
         [sys.executable, "-m", "pytest", "test_performance.py", "-v", "--benchmark-only", "--benchmark-sort=mean"],
-        "Performance Benchmark Tests"
+        "Performance Benchmark Tests",
+        cwd=str(script_dir)
     )
     
     return result
 
 def run_stability_tests() -> Dict[str, Any]:
     """Run stability tests."""
-    print("\n🛡️  Running Stability Tests...")
+    print("\n🛡️ Running Stability Tests...")
     
+    script_dir = Path(__file__).parent
     result = run_command(
         [sys.executable, "-m", "pytest", "test_stability.py", "-v", "--tb=short"],
-        "Stability Tests"
+        "Stability Tests",
+        cwd=str(script_dir)
     )
     
     return result
@@ -118,9 +142,11 @@ def run_all_tests() -> Dict[str, Any]:
     """Run all tests with pytest."""
     print("\n🎯 Running All Tests...")
     
+    script_dir = Path(__file__).parent
     result = run_command(
-        [sys.executable, "-m", "pytest", "-v", "--tb=short", "--benchmark-only", "--benchmark-sort=mean"],
-        "All Tests"
+        [sys.executable, "-m", "pytest", "-v", "--tb=short", "-c", str(script_dir / "pytest.ini")],
+        "All Tests",
+        cwd=str(script_dir)
     )
     
     return result
@@ -131,7 +157,8 @@ def generate_report(results: List[Dict[str, Any]]) -> Dict[str, Any]:
     successful_tests = sum(1 for r in results if r["success"])
     failed_tests = total_tests - successful_tests
     
-    total_duration = sum(r["duration"] for r in results)
+    # Handle missing duration keys safely
+    total_duration = sum(r.get("duration", 0) for r in results)
     
     report = {
         "summary": {

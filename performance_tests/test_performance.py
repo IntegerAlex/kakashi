@@ -172,15 +172,22 @@ class TestMemoryBenchmarks:
         
         # Get final memory
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
-        memory_increase = final_memory - baseline_memory
+        memory_change = final_memory - baseline_memory
         
         print(f"\nMemory Usage Benchmark:")
-        print(f"  Baseline: {baseline_memory:.2f} MB")
-        print(f"  Final:    {final_memory:.2f} MB")
-        print(f"  Increase: {memory_increase:.2f} MB")
+        print(f"  Baseline memory: {baseline_memory:.2f} MB")
+        print(f"  Final memory: {final_memory:.2f} MB")
+        print(f"  Memory change: {memory_change:+.2f} MB")
         
-        # Assert reasonable memory usage
-        assert memory_increase < 100, f"Memory increase too high: {memory_increase:.2f} MB"
+        # Assertions - handle both positive and negative memory changes
+        if memory_change > 0:
+            # Memory increased - check it's reasonable
+            assert memory_change < 100, f"Memory increase too high: {memory_change:.2f} MB"
+        else:
+            # Memory decreased (garbage collection freed memory) - this is good
+            print(f"  ✅ Memory decreased by {abs(memory_change):.2f} MB (garbage collection working)")
+            # Allow up to 50MB decrease (very aggressive garbage collection)
+            assert memory_change > -50, f"Memory decrease too aggressive: {memory_change:.2f} MB"
     
     def test_memory_pressure_test(self, kakashi_sync_logger):
         """Test memory behavior under pressure."""
@@ -193,29 +200,43 @@ class TestMemoryBenchmarks:
         gc.collect()
         baseline_memory = process.memory_info().rss / 1024 / 1024  # MB
         
-        # Create many loggers and log messages
-        loggers = []
+        # Apply memory pressure
+        pressure_loggers = []
         for i in range(100):
-            logger = kakashi_sync_logger.__class__(f"pressure_test_{i}")
-            loggers.append(logger)
+            logger = kakashi_sync_logger.__class__(f"pressure_{i}")
+            pressure_loggers.append(logger)
             
             for j in range(100):
-                logger.info(f"Pressure test message {j} from logger {i}")
+                logger.info(f"Pressure message {j} from logger {i}")
         
-        # Force garbage collection
+        # Measure memory under pressure
+        gc.collect()
+        pressure_memory = process.memory_info().rss / 1024 / 1024  # MB
+        
+        # Clear pressure (remove references)
+        pressure_loggers.clear()
         gc.collect()
         
-        # Get final memory
-        final_memory = process.memory_info().rss / 1024 / 1024  # MB
-        memory_increase = final_memory - baseline_memory
+        # Measure recovery
+        recovery_memory = process.memory_info().rss / 1024 / 1024  # MB
         
-        print(f"\nMemory Pressure Test:")
-        print(f"  Baseline: {baseline_memory:.2f} MB")
-        print(f"  Final:    {final_memory:.2f} MB")
-        print(f"  Increase: {memory_increase:.2f} MB")
+        print(f"\nMemory Pressure Recovery Test:")
+        print(f"  Baseline memory: {baseline_memory:.2f} MB")
+        print(f"  Pressure memory: {pressure_memory:.2f} MB")
+        print(f"  Recovery memory: {recovery_memory:.2f} MB")
+        print(f"  Pressure increase: {pressure_memory - baseline_memory:+.2f} MB")
+        print(f"  Recovery change: {recovery_memory - baseline_memory:+.2f} MB")
         
-        # Assert reasonable memory usage
-        assert memory_increase < 200, f"Memory increase too high: {memory_increase:.2f} MB"
+        # Assertions
+        pressure_increase = pressure_memory - baseline_memory
+        recovery_change = recovery_memory - baseline_memory
+        
+        # Pressure should increase memory usage
+        assert pressure_increase > 0, "Memory pressure not applied"
+        
+        # Recovery should be close to baseline (within 20MB)
+        # Allow for some memory overhead from the test itself
+        assert abs(recovery_change) < 20, f"Memory not recovered to baseline: {recovery_change:+.2f} MB"
 
 class TestLatencyBenchmarks:
     """Test latency benchmarks."""
