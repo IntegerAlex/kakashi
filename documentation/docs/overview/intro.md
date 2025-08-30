@@ -1,7 +1,17 @@
 ---
 id: intro
-title: Kakashi Documentation
+title: "Kakashi - Professional High-Performance Python Logging Library | 56K+ logs/sec"
 sidebar_label: Introduction
+description: "Kakashi is a professional high-performance Python logging library delivering 56,310+ logs/sec with superior concurrency scaling (1.17x), true async logging (169K logs/sec), and structured data support. Perfect for production applications requiring high throughput and excellent performance."
+keywords: "python logging, high performance logging, structured logging, async logging, logging library, python logger, kakashi logging, performance logging, concurrent logging, memory efficient logging, 56K logs per second, concurrency scaling"
+og_title: "Kakashi - Professional High-Performance Python Logging Library"
+og_description: "High-performance Python logging with structured, contextual pipelines - 56K+ logs/sec, superior concurrency scaling, true async logging"
+og_type: "article"
+og_image: "img/kakashi-logo.png"
+twitter_card: "summary_large_image"
+twitter_title: "Kakashi - Professional High-Performance Python Logging Library"
+twitter_description: "High-performance Python logging with structured, contextual pipelines - 56K+ logs/sec, superior concurrency scaling, true async logging"
+twitter_image: "img/kakashi-logo.png"
 ---
 
 Kakashi is a **professional high-performance Python logging library** designed for production applications that require both high throughput and excellent concurrency scaling. It provides a modern, clean API with focus on performance and maintainability.

@@ -2,35 +2,31 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
 const config: Config = {
-  title: 'Kakashi',
-  tagline: 'High-performance Python logging with structured, contextual pipelines',
+  title: 'Kakashi - Professional High-Performance Python Logging Library',
+  tagline: 'High-performance Python logging with structured, contextual pipelines - 56K+ logs/sec, superior concurrency scaling, true async logging',
   favicon: 'img/kakashi-logo.png',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    v4: true, 
   },
 
-  // Set the production url of your site here
-  url: 'https://kakashi-docs.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+  url: 'https://docs.kakashi.gossorg.in',
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'IntegerAlex', // Usually your GitHub org/user name.
-  projectName: 'kakashi', // Usually your repo name.
+  organizationName: 'IntegerAlex', 
+  projectName: 'kakashi', 
+
+  // SEO and metadata
+  customFields: {
+    keywords: 'python logging, high performance logging, structured logging, async logging, logging library, python logger, kakashi logging, performance logging, concurrent logging, memory efficient logging',
+    description: 'Kakashi is a professional high-performance Python logging library delivering 56K+ logs/sec with superior concurrency scaling, true async logging, and structured data support. Perfect for production applications requiring high throughput and excellent performance.',
+    author: 'Kakashi Development Team',
+  },
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -42,12 +38,9 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Route docs at /docs (default)
           routeBasePath: '/docs',
-          // Edit URL points to repository documentation directory
           editUrl: 'https://github.com/IntegerAlex/kakashi/tree/main/documentation',
         },
-        // Enable blog
         blog: {
           showReadingTime: true,
           postsPerPage: 10,
@@ -63,14 +56,40 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Force dark theme only
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: true,
       respectPrefersColorScheme: false,
     },
     
-    // Replace with your project's social card
+    // SEO and metadata
+    metadata: [
+      {name: 'keywords', content: 'python logging, high performance logging, structured logging, async logging, logging library, python logger, kakashi logging, performance logging, concurrent logging, memory efficient logging'},
+      {name: 'description', content: 'Kakashi is a professional high-performance Python logging library delivering 56K+ logs/sec with superior concurrency scaling, true async logging, and structured data support. Perfect for production applications requiring high throughput and excellent performance.'},
+      {name: 'author', content: 'Kakashi Development Team'},
+      {name: 'robots', content: 'index, follow'},
+      {name: 'googlebot', content: 'index, follow'},
+      {name: 'msapplication-TileColor', content: '#2b5797'},
+      {name: 'theme-color', content: '#2b5797'},
+      // Open Graph
+      {property: 'og:type', content: 'website'},
+      {property: 'og:title', content: 'Kakashi - Professional High-Performance Python Logging Library'},
+      {property: 'og:description', content: 'High-performance Python logging with structured, contextual pipelines - 56K+ logs/sec, superior concurrency scaling, true async logging'},
+      {property: 'og:image', content: 'img/socialcard.png'},
+      {property: 'og:url', content: 'https://docs.kakashi.gossorg.in'},
+      {property: 'og:site_name', content: 'Kakashi Documentation'},
+      // Twitter Card
+      {name: 'twitter:card', content: 'summary_large_image'},
+      {name: 'twitter:title', content: 'Kakashi - Professional High-Performance Python Logging Library'},
+      {name: 'twitter:description', content: 'High-performance Python logging with structured, contextual pipelines - 56K+ logs/sec, superior concurrency scaling, true async logging'},
+      {name: 'twitter:image', content: 'img/socialcard.png'},
+      // Additional SEO
+      {name: 'application-name', content: 'Kakashi'},
+      {name: 'apple-mobile-web-app-title', content: 'Kakashi'},
+      {name: 'apple-mobile-web-app-capable', content: 'yes'},
+      {name: 'apple-mobile-web-app-status-bar-style', content: 'default'},
+    ],
+    
     image: 'img/socialcard.png',
     navbar: {
       title: 'Kakashi',
@@ -109,7 +128,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Kakashi. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Kakashi. All rights reserved.`,
     },
     prism: {
       theme: prismThemes.github,

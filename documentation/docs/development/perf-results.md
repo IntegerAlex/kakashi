@@ -1,6 +1,16 @@
 ---
 id: perf-results
-title: Latest Performance Results
+title: "Kakashi Performance Results - 56K+ logs/sec, 1.17x Concurrency Scaling | Benchmark Analysis"
+description: "Comprehensive performance results for Kakashi Python logging library: 56,310+ logs/sec throughput, 1.17x concurrency scaling, 169K async logs/sec, and <0.02MB memory usage. Production-ready benchmark analysis."
+keywords: "kakashi performance, python logging benchmark, 56K logs per second, concurrency scaling, async logging performance, memory efficient logging, logging library benchmark, performance comparison"
+og_title: "Kakashi Performance Results - 56K+ logs/sec, 1.17x Concurrency Scaling"
+og_description: "Comprehensive performance results: 56,310+ logs/sec throughput, 1.17x concurrency scaling, 169K async logs/sec, and <0.02MB memory usage"
+og_type: "article"
+og_image: "img/kakashi-logo.png"
+twitter_card: "summary_large_image"
+twitter_title: "Kakashi Performance Results - 56K+ logs/sec, 1.17x Concurrency Scaling"
+twitter_description: "Comprehensive performance results: 56,310+ logs/sec throughput, 1.17x concurrency scaling, 169K async logs/sec, and <0.02MB memory usage"
+twitter_image: "img/kakashi-logo.png"
 ---
 
 Below are the latest **production-ready performance results** from the Kakashi performance validation suite, demonstrating the library's superior performance characteristics.

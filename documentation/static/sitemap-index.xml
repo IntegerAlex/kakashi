@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main sitemap -->
+  <sitemap>
+    <loc>https://docs.kakashi.gossorg.in/sitemap.xml</loc>
+    <lastmod>2025-08-30</lastmod>
+  </sitemap>
+  
+  <!-- Blog sitemap -->
+  <sitemap>
+    <loc>https://docs.kakashi.gossorg.in/blog-sitemap.xml</loc>
+    <lastmod>2025-08-30</lastmod>
+  </sitemap>
+  
+  <!-- Documentation sitemap -->
+  <sitemap>
+    <loc>https://docs.kakashi.gossorg.in/docs-sitemap.xml</loc>
+    <lastmod>2025-08-30</lastmod>
+  </sitemap>
+</sitemapindex>
