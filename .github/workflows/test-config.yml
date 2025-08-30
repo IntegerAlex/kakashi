@@ -1,0 +1,87 @@
+# Test Configuration for Kakashi Performance Tests
+test_suite:
+    name: "Kakashi Comprehensive CI Test Suite"
+    version: "1.0.0"
+    description: "End-to-end testing of Kakashi logging library"
+  
+    performance:
+    # Performance test parameters
+    message_counts: [1000, 10000, 50000]
+    thread_counts: [1, 2, 4, 8]
+    timeout_seconds: 300
+    memory_limit_mb: 500
+    
+    # Performance thresholds
+    min_sync_throughput: 10000    # logs/sec
+    min_async_throughput: 50000   # logs/sec
+    max_memory_usage: 100         # MB
+    max_concurrency_penalty: 0.3  # 30% max performance loss with threads
+  
+    compatibility:
+    # Python versions to test
+    python_versions: ["3.9", "3.10", "3.11", "3.12"]
+    
+    # Operating systems to test
+    operating_systems: ["ubuntu-latest", "windows-latest", "macos-latest"]
+    
+    # Dependencies to test against
+    comparison_libraries:
+      - name: "loguru"
+        version: ">=0.6.0"
+        features: ["sync", "async", "structured"]
+      
+      - name: "structlog"
+        version: ">=21.1.0"
+        features: ["sync", "structured"]
+      
+      - name: "standard_library"
+        version: "built-in"
+        features: ["sync"]
+  
+    stability:
+    # Stability test parameters
+    concurrent_threads: 10
+    test_duration_seconds: 60
+    memory_sampling_interval: 5
+    
+    # Stability thresholds
+    max_memory_growth_mb: 50
+    max_error_rate: 0.01  # 1% max error rate
+    max_response_time_ms: 1000
+  
+    api_testing:
+    # API coverage
+    test_categories:
+      - "basic_logging"
+      - "structured_logging"
+      - "async_logging"
+      - "configuration"
+      - "context_management"
+      - "pipeline_system"
+      - "sink_system"
+      - "error_handling"
+      - "performance_optimization"
+    
+    # Test depth
+    test_iterations: 100
+    edge_case_coverage: true
+    error_scenario_testing: true
+  
+  reporting:
+    # Report generation
+    generate_html_report: true
+    generate_json_report: true
+    generate_markdown_report: true
+    
+    # Artifact retention
+    retain_logs_days: 30
+    retain_reports_days: 90
+    
+    # Performance metrics
+    track_metrics:
+      - "throughput"
+      - "latency"
+      - "memory_usage"
+      - "cpu_usage"
+      - "error_rate"
+      - "concurrency_scaling"
