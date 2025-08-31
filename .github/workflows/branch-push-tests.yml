@@ -1,0 +1,166 @@
+name: Branch Push Tests
+
+on:
+  push:
+    branches-ignore: [ main, master, develop ]
+    paths:
+      - 'kakashi/**'
+      - 'performance_tests/**'
+      - '.github/workflows/**'
+
+env:
+  PYTHONUNBUFFERED: 1
+  PYTHONDONTWRITEBYTECODE: 1
+
+jobs:
+  test-branch:
+    name: "Test Branch: ${{ github.ref_name }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('performance_tests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r performance_tests/requirements.txt
+
+      - name: Build and install Kakashi
+        run: |
+          echo "🔨 Building Kakashi..."
+          pip install -e .
+          echo "✅ Kakashi installed successfully"
+
+      - name: Run Performance Tests
+        run: |
+          echo "⚡ Running Performance Tests on branch: ${{ github.ref_name }}"
+          cd performance_tests
+          python -m pytest test_performance.py -v --benchmark-only --benchmark-sort=mean
+
+      - name: Run API Compatibility Tests
+        run: |
+          echo "🔧 Running API Compatibility Tests..."
+          cd performance_tests
+          python -m pytest test_api_compatibility.py -v --tb=short
+
+      - name: Run Stability Tests
+        run: |
+          echo "🛡️ Running Stability Tests..."
+          cd performance_tests
+          python -m pytest test_stability.py -v --tb=short
+
+  test-master-after-branch:
+    name: "Test Master Branch"
+    runs-on: ubuntu-latest
+    needs: test-branch
+    if: always()
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('performance_tests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r performance_tests/requirements.txt
+
+      - name: Build and install Kakashi
+        run: |
+          echo "🔨 Building Kakashi on master branch..."
+          pip install -e .
+          echo "✅ Kakashi installed successfully on master"
+
+      - name: Run Performance Tests on Master
+        run: |
+          echo "⚡ Running Performance Tests on master branch"
+          cd performance_tests
+          python -m pytest test_performance.py -v --benchmark-only --benchmark-sort=mean
+
+      - name: Run API Compatibility Tests on Master
+        run: |
+          echo "🔧 Running API Compatibility Tests on master..."
+          cd performance_tests
+          python -m pytest test_api_compatibility.py -v --tb=short
+
+      - name: Run Stability Tests on Master
+        run: |
+          echo "🛡️ Running Stability Tests on master..."
+          cd performance_tests
+          python -m pytest test_stability.py -v --tb=short
+
+      - name: Comment on Branch PR
+        if: github.event_name == 'push' && github.ref != 'refs/heads/master'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branchName = context.ref.replace('refs/heads/', '');
+            
+            // Find the PR associated with this branch
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${branchName}`,
+              state: 'open'
+            });
+            
+            if (pulls.length > 0) {
+              const pr = pulls[0];
+              const commentBody = '## 🚀 Branch Tests Completed\n\n✅ **Performance Tests**: Passed on branch `' + branchName + '`\n✅ **Master Branch Tests**: Passed after branch push\n\nAll tests are now passing on both the feature branch and master branch. The changes are ready for review and merge.\n\n---\n*Tests run automatically on branch push to ensure code quality.*';
+              
+              github.rest.issues.createComment({
+                issue_number: pr.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }

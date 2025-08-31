@@ -2,13 +2,12 @@ name: Performance Tests
 
 on:
   push:
-    branches: [ main, develop ]
     paths:
       - 'kakashi/**'
       - 'performance_tests/**'
       - '.github/workflows/performance-tests.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
     paths:
       - 'kakashi/**'
       - 'performance_tests/**'

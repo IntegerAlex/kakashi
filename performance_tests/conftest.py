@@ -16,6 +16,13 @@ import sys
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_async_logging():
+    """Ensure async logging is properly shut down after all tests."""
+    yield
+    from kakashi import shutdown_async_logging
+    shutdown_async_logging()
+
 @pytest.fixture(scope="session")
 def temp_test_dir() -> Generator[Path, None, None]:
     """Create a temporary directory for test artifacts."""
@@ -112,9 +119,18 @@ def kakashi_sync_logger():
 
 @pytest.fixture(scope="function")
 def kakashi_async_logger():
-    """Create a fresh Kakashi async logger for each test."""
+    """Create a fresh Kakashi async logger for each test.
+    
+    Note: This logger is "asynchronous" in the sense that it doesn't block
+    the calling thread, but it doesn't use Python's async/await syntax.
+    The info() method is synchronous and enqueues messages to a background queue.
+    """
     from kakashi import get_async_logger
-    return get_async_logger("test_async_logger")
+    logger = get_async_logger("test_async_logger")
+    yield logger
+    # Clean up async logging to prevent daemon thread errors
+    from kakashi import shutdown_async_logging
+    shutdown_async_logging()
 
 @pytest.fixture(scope="function")
 def kakashi_structured_logger():
