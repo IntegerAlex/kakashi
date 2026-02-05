@@ -21,7 +21,7 @@ def get_requirements():
 
 setup(
     name="kakashi",
-    version="0.1.0",
+    version="0.2.1",
     author="Akshat Kotpalliwar",
     author_email="akshatkot@gmail.com",
     description="High-performance logging utility for Python applications with advanced features",

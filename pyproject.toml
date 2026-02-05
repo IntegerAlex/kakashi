@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kakashi"
-version = "0.2.0"
+version = "0.2.1"
 description = "High-performance logging utility for Python applications with advanced features"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -36,7 +36,6 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
 ]
 dependencies = [
-    # Zero dependencies for vanilla experience
     "orjson>=3.9.7",
 ]
 
