@@ -14,12 +14,11 @@ Key features:
 - Cloud-native and observability platform integration
 """
 
-import json
 from typing import Any, Dict, Callable
 from datetime import datetime
 
 from .records import LogRecord, LogLevel
-from .structured_logger import fast_json_serialize_str, HAS_ORJSON
+from .structured_logger import fast_json_serialize_str, fast_json_serialize, HAS_ORJSON
 
 
 # ============================================================================
@@ -471,12 +470,13 @@ def binary_efficient_formatter(record: LogRecord) -> bytes:
     if record.fields:
         entry["fields"] = record.fields
     
-    # Use orjson directly for bytes output
+    # Prefer high-performance orjson path when available, but gracefully
+    # fall back to the standard library JSON serializer when it's not.
     if HAS_ORJSON:
-        import orjson
-        return orjson.dumps(entry, option=orjson.OPT_UTC_Z)
-    else:
-        return json.dumps(entry, separators=(',', ':')).encode('utf-8')
+        return fast_json_serialize(entry)
+    
+    import json  # Local import to avoid mandatory dependency
+    return json.dumps(entry, separators=(",", ":")).encode("utf-8")
 
 
 # ============================================================================

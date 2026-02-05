@@ -55,7 +55,9 @@ setup(
         "flask": ["flask>=1.0.0"],
         "django": ["django>=3.0.0"],
         "web": ["fastapi>=0.68.0", "starlette>=0.14.0", "flask>=1.0.0", "django>=3.0.0"],
-        "gui": ["tkinter;python_version>='3.0'"],
+        # GUI extra intentionally has no install-time dependencies:
+        # tkinter is part of the Python standard library and not a PyPI package.
+        "gui": [],
         "dev": [
             "pytest>=6.0",
             "pytest-asyncio>=0.18.0",
