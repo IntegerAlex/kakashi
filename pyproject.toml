@@ -37,6 +37,7 @@ classifiers = [
 ]
 dependencies = [
     # Zero dependencies for vanilla experience
+    "orjson>=3.9.7",
 ]
 
 [project.optional-dependencies]
@@ -49,7 +50,10 @@ django = ["django>=3.0.0"]
 web = ["fastapi>=0.68.0", "starlette>=0.14.0", "flask>=1.0.0", "django>=3.0.0"]
 
 # GUI application dependencies (optional examples)
-gui = ["tkinter;python_version>='3.0'"]
+# Note: tkinter is part of the Python standard library and not a PyPI package,
+# so we intentionally avoid listing it as an install requirement here to keep
+# dependency resolution (e.g. with uv/pip) happy.
+gui = []
 
 # Development dependencies
 dev = [
