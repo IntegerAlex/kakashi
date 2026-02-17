@@ -167,6 +167,16 @@ def setup_analytics_logging():
     return logger
 ```
 
+### Flush Semantics (Important)
+
+**`flush()` on async loggers does NOT guarantee durability.**
+
+- **Legacy AsyncLogger** (from `kakashi.core.logger`): `flush()` only sleeps 1ms to yield to the background worker. It does **not** wait for queued messages to be written.
+- **Functional async loggers** (from `kakashi.core.async_interface`): There is no `flush()` that drains the queue. Messages are processed asynchronously in batches.
+- **Only `shutdown_async_backend(timeout=...)` guarantees** that all queued messages are processed before the process exits. This is the ONLY way to ensure no message loss at shutdown.
+
+**Do not rely on `flush()` for application logic.** Treat async logging as best-effort telemetry. For critical audit trails or state, write to a reliable store (database, message queue) and log secondarily.
+
 ### Error Handling and Recovery
 
 ```python
@@ -181,6 +191,36 @@ def graceful_shutdown():
         print(f"Error during shutdown: {e}")
 ```
 
+### Application Shutdown Patterns
+
+**You must call `shutdown_async_backend()` at application exit** to prevent message loss. If the process exits without shutdown, queued messages may never be written.
+
+#### Recommended: Register with atexit
+
+```python
+import atexit
+from kakashi.core.async_interface import shutdown_async_backend
+
+# Register early (e.g. at startup)
+atexit.register(shutdown_async_backend)
+
+# Or with custom timeout for high-volume apps:
+atexit.register(lambda: shutdown_async_backend(timeout=10.0))
+```
+
+#### Timeout Considerations
+
+- **Default (5s)**: Suitable for most applications
+- **High-volume**: Use 10-30s if you expect large queues or slow disk/network I/O
+- **Tests**: Use shorter timeouts (1-2s) to avoid hanging test suites
+- If timeout is exceeded, some messages may be dropped during shutdown
+
+#### What Happens Without Shutdown
+
+- Worker threads are daemon threads in some configurations; the process can exit before the queue drains
+- Even with non-daemon workers, abrupt exit (SIGKILL, `os._exit`) bypasses atexit
+- Result: silent message loss. Always register shutdown for production services.
+
 ### Best Practices
 
 1. **Queue Sizing**: Start with 25,000-50,000 max queue size, adjust based on throughput
@@ -188,19 +228,7 @@ def graceful_shutdown():
 3. **Batch Sizing**: Start with 200-500 batch size, increase for higher throughput
 4. **Monitoring**: Monitor queue sizes and worker health in production
 5. **Error Handling**: Implement graceful shutdown to prevent message loss
-6. **Graceful Shutdown**: Ensure all queued messages are processed on shutdown
-
-```python
-import atexit
-from kakashi.core.async_interface import shutdown_async_backend
-
-# Register shutdown handler
-atexit.register(shutdown_async_backend)
-
-# Or manually at exit:
-def cleanup():
-    shutdown_async_backend(timeout=10.0)
-```
+6. **Graceful Shutdown**: Ensure all queued messages are processed on shutdown (see Application Shutdown Patterns above)
 
 ---
 

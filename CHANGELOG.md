@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Async logging flush semantics documentation and shutdown patterns guide.
+- New guides: `testing-patterns.md` (async logger testing), `common-pitfalls.md`.
+- `AsyncConfig` validation with helpful error messages.
+- Async logger test utilities: `wait_for_async_queue_drain`, `async_logger_with_teardown` fixture.
+- Export of `shutdown_async_backend` from main `kakashi` package.
+
+### Changed
+- README license reference corrected to LGPL-2.1.
+- Expanded async-backends documentation with flush semantics and shutdown patterns.
+- Deprecated legacy `AsyncLogger` (removal planned for v0.4.0); use `kakashi.core.async_interface.get_async_logger`.
+- Type hints completed in `logger.py`, `async_interface.py`.
+- Deprecations doc now documents dual async systems and migration path.
+
+### Fixed
+- Session test teardown now shuts down both legacy and functional async backends.
+
 ## [0.2.1] - 2026-02-05
 
 ### Changed

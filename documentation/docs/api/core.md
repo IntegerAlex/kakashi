@@ -97,7 +97,7 @@ class AsyncLogger:
     def critical(self, message: str, **fields: Any) -> None
     def exception(self, message: str, **fields: Any) -> None
     
-    def flush(self) -> None
+    def flush(self) -> None  # Best effort only - see below
 ```
 
 **Key Features:**
@@ -105,6 +105,8 @@ class AsyncLogger:
 - Queue-based message handling with backpressure protection
 - Batch processing for optimal throughput
 - Graceful shutdown with proper cleanup
+
+**Warning - `flush()` semantics:** `AsyncLogger.flush()` is best-effort only. It sleeps 1ms to yield to the background worker but does NOT guarantee that queued messages have been written. For durability guarantees at shutdown, use `shutdown_async_logging()` or `shutdown_async_backend(timeout=...)` instead.
 
 ## Utility Functions
 

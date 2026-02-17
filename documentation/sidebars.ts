@@ -45,6 +45,8 @@ const sidebars: SidebarsConfig = {
         'guides/web-integrations',
         'guides/pipeline-composition',
         'guides/async-backends',
+        'guides/testing-patterns',
+        'guides/common-pitfalls',
       ],
     },
     {

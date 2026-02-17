@@ -5,7 +5,7 @@ This module provides convenient functions for creating and using asynchronous
 loggers with various performance optimizations.
 """
 
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, Callable
 from pathlib import Path
 
 from .config import (
@@ -59,6 +59,11 @@ def get_async_logger(
         # Custom async configuration
         config = AsyncConfig(max_queue_size=20000, worker_count=3)
         logger = get_async_logger("high_volume", async_config=config)
+
+    Note:
+        There is no flush() that guarantees durability. For durability at
+        application exit, call shutdown_async_backend(timeout=...) (e.g. via
+        atexit). See shutdown_async_backend for details.
     """
     # Get current environment config and force async
     env_config = get_environment_config()
@@ -142,7 +147,7 @@ def get_high_performance_logger(
 
 def get_network_logger(
     name: str,
-    network_writer_func: callable,
+    network_writer_func: Callable[[str], None],
     max_queue_size: int = 20000,
     batch_size: int = 100,
     max_retries: int = 5
@@ -380,17 +385,19 @@ def get_async_stats() -> Dict[str, Any]:
 def shutdown_async_backend(timeout: float = 5.0) -> None:
     """
     Gracefully shutdown the async logging backend.
-    
-    This ensures all queued messages are processed before shutdown.
-    Call this at application exit to prevent message loss.
-    
+
+    This is the ONLY way to guarantee all queued messages are processed before
+    the process exits. Without calling this at shutdown, queued messages may
+    be lost.
+
     Args:
-        timeout: Maximum time to wait for shutdown
-        
+        timeout: Maximum time to wait for shutdown (seconds). Increase for
+            high-volume applications or slow I/O.
+
     Example:
         import atexit
         atexit.register(shutdown_async_backend)
-        
+
         # Or manually at exit:
         shutdown_async_backend(timeout=10.0)
     """

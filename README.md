@@ -64,13 +64,23 @@ kakashi/
 │   ├── structured_logger.py # Structured logging support
 │   └── sinks.py            # Output destination system
 ├── performance_tests/       # Performance validation
-│   └── validate_performance.py
+│   ├── test_performance.py
+│   ├── test_api_compatibility.py
+│   └── test_stability.py
 └── README.md               # This file
 ```
 
 ## 📖 Quick Start
 
 ### Basic Usage
+
+**Tip:** For production apps using async logging, register shutdown at startup to prevent message loss:
+
+```python
+import atexit
+from kakashi import shutdown_async_logging, shutdown_async_backend
+atexit.register(shutdown_async_backend)  # For functional async; use shutdown_async_logging for legacy
+```
 
 ```python
 from kakashi import get_logger, get_async_logger
@@ -131,7 +141,8 @@ Run the performance validation to ensure your installation meets production targ
 
 ```bash
 cd performance_tests
-python validate_performance.py
+pip install -r requirements.txt
+python -m pytest test_performance.py -v --benchmark-only
 ```
 
 This will test:
@@ -199,17 +210,33 @@ This will test:
 
 ## 🚨 Migration from v0.1.x
 
-The v0.2.0 release maintains backward compatibility while providing significant performance improvements:
+The v0.2.x release maintains backward compatibility while providing significant performance improvements:
 
 ```python
 # Old v0.1.x code (still works)
-from kakashi import setup, get_logger
-setup("production")
+from kakashi import setup_logging, get_logger
+setup_logging("production")
 logger = get_logger(__name__)
 
-# New v0.2.0 code (recommended)
+# New v0.2.x code (recommended)
 from kakashi import get_logger
 logger = get_logger(__name__)  # Auto-configuration
+```
+
+### Async Logger Migration
+
+```python
+# Legacy (will be deprecated)
+from kakashi import get_async_logger, shutdown_async_logging
+logger = get_async_logger(__name__)
+# ... use logger ...
+shutdown_async_logging()
+
+# Functional (recommended)
+from kakashi.core.async_interface import get_async_logger, shutdown_async_backend
+logger = get_async_logger(__name__)  # Same name, different implementation
+# ... use logger ...
+shutdown_async_backend(timeout=5.0)
 ```
 
 ## 🧭 Roadmap & Collaboration
@@ -235,7 +262,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the LGPL-2.1 License - see the [LICENSE](LICENSE) file for details.
 
 ## ⚖️ Legal Disclaimers
 
@@ -262,4 +289,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Kakashi v0.2.0** - Professional High-Performance Logging for Python
+**Kakashi v0.2.1** - Professional High-Performance Logging for Python
