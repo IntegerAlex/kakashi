@@ -72,6 +72,14 @@ kakashi/
 
 ### Basic Usage
 
+**Tip:** For production apps using async logging, register shutdown at startup to prevent message loss:
+
+```python
+import atexit
+from kakashi import shutdown_async_logging, shutdown_async_backend
+atexit.register(shutdown_async_backend)  # For functional async; use shutdown_async_logging for legacy
+```
+
 ```python
 from kakashi import get_logger, get_async_logger
 
@@ -235,7 +243,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the LGPL-2.1 License - see the [LICENSE](LICENSE) file for details.
 
 ## ⚖️ Legal Disclaimers
 
@@ -262,4 +270,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Kakashi v0.2.0** - Professional High-Performance Logging for Python
+**Kakashi v0.2.1** - Professional High-Performance Logging for Python

@@ -168,3 +168,4 @@ logs/
 documentation/build/
 documentation/.docusaurus/
 documentation/node_modules/
+.gitbotrc.json

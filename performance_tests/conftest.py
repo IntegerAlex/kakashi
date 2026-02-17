@@ -22,6 +22,11 @@ def cleanup_async_logging():
     yield
     from kakashi import shutdown_async_logging
     shutdown_async_logging()
+    try:
+        from kakashi.core.async_interface import shutdown_async_backend
+        shutdown_async_backend(timeout=2.0)
+    except ImportError:
+        pass
 
 @pytest.fixture(scope="session")
 def temp_test_dir() -> Generator[Path, None, None]:
@@ -137,3 +142,53 @@ def kakashi_structured_logger():
     """Create a fresh Kakashi structured logger for each test."""
     from kakashi.core import create_structured_logger
     return create_structured_logger("test_structured_logger")
+
+
+# =============================================================================
+# Async logger test utilities
+# =============================================================================
+
+def wait_for_async_queue_drain(
+    timeout: float = 5.0,
+    poll_interval: float = 0.05,
+) -> bool:
+    """
+    Wait until the functional async backend queue is empty or timeout.
+
+    Use before asserting on log output when using async loggers.
+
+    Returns:
+        True if queue drained, False if timeout reached.
+    """
+    import time
+    try:
+        from kakashi.core.async_interface import get_async_stats
+    except ImportError:
+        return False
+    start = time.time()
+    while time.time() - start < timeout:
+        stats = get_async_stats()
+        if stats.get("queue_size", 0) == 0:
+            return True
+        time.sleep(poll_interval)
+    return False
+
+
+@pytest.fixture
+def async_logger_with_teardown():
+    """
+    Functional async logger that shuts down cleanly after each test.
+
+    Use for tests that need async logging and must drain the queue
+    before asserting on output.
+    """
+    try:
+        from kakashi.core.async_interface import (
+            get_async_logger,
+            shutdown_async_backend,
+        )
+    except ImportError:
+        pytest.skip("kakashi.core.async_interface not available")
+    logger = get_async_logger("test.async_teardown")
+    yield logger
+    shutdown_async_backend(timeout=2.0)
