@@ -16,7 +16,7 @@ import threading
 import time
 import sys
 import queue
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List, Tuple
 
 # Pre-computed constants for fast access
 _LEVEL_NAMES = {
@@ -39,7 +39,7 @@ _async_shutdown = threading.Event()
 
 
 
-def _async_worker_thread():
+def _async_worker_thread() -> None:
     """Background worker for async logging."""
     batch = []
     batch_size = 50  # Optimal batch size for throughput/latency balance
@@ -78,7 +78,7 @@ def _async_worker_thread():
             pass  # Ignore errors in background thread
 
 
-def _process_async_batch(batch):
+def _process_async_batch(batch: List[Tuple[float, int, str, str, Optional[Dict[str, Any]]]]) -> None:
     """Process a batch of async log messages."""
     try:
         # Use sys.stderr.write for better async performance
@@ -101,7 +101,7 @@ def _process_async_batch(batch):
         pass  # Ignore errors in async processing
 
 
-def _ensure_async_worker():
+def _ensure_async_worker() -> None:
     """Ensure async worker thread is running."""
     global _async_worker
     if _async_worker is None or not _async_worker.is_alive():
@@ -119,8 +119,10 @@ class LogFormatter:
     def __init__(self):
         pass
     
-    def format_message(self, level: int, message: str, logger_name: str, 
-                      fields: Optional[Dict[str, Any]] = None) -> str:
+    def format_message(
+        self, level: int, message: str, logger_name: str,
+        fields: Optional[Dict[str, Any]] = None
+    ) -> str:
         """Format log message with optimal concurrency performance."""
         timestamp = int(time.time())
         level_name = _LEVEL_NAMES.get(level, 'UNKNOWN')
@@ -151,7 +153,7 @@ class Logger:
         self.min_level = min_level
         self.formatter = LogFormatter()
     
-    def _get_thread_batch(self):
+    def _get_thread_batch(self) -> List[str]:
         """Get thread-local batch for efficient I/O."""
         if not hasattr(_thread_local, 'batch'):
             _thread_local.batch = []
@@ -175,7 +177,7 @@ class Logger:
             self._flush_batch(batch)
             batch.clear()
     
-    def _flush_batch(self, batch):
+    def _flush_batch(self, batch: List[str]) -> None:
         """Flush batch to stderr efficiently."""
         try:
             # Single write call for entire batch
@@ -228,18 +230,30 @@ class Logger:
 class AsyncLogger:
     """
     True asynchronous logger with background processing.
-    
+
+    .. deprecated:: 0.3.0
+        This legacy AsyncLogger will be removed in v0.4.0. Use
+        :func:`kakashi.core.async_interface.get_async_logger` for new code.
+        See docs/operations/deprecations.md for migration.
+
     Key features:
     - Non-blocking enqueue operation
     - Background worker thread for I/O
     - Batch processing for efficiency
     - Superior throughput vs sync logging
     """
-    
+
     def __init__(self, name: str, min_level: int = 20):
+        import warnings
+        warnings.warn(
+            "AsyncLogger from kakashi.core.logger is deprecated and will be removed in v0.4.0. "
+            "Use kakashi.core.async_interface.get_async_logger for new code.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.name = name
         self.min_level = min_level
-        
+
         # Ensure async worker is running
         _ensure_async_worker()
     
@@ -291,9 +305,12 @@ class AsyncLogger:
         self._log_async(40, message, fields)
     
     def flush(self) -> None:
-        """Flush pending messages (best effort)."""
-        # For async logger, we can't force immediate flush
-        # but we can yield to allow background processing
+        """Flush pending messages (best effort only).
+
+        Does NOT guarantee that queued messages have been written. This method
+        only sleeps briefly to yield to the background worker. For durability
+        guarantees at shutdown, use shutdown_async_logging() instead.
+        """
         time.sleep(0.001)
 
 

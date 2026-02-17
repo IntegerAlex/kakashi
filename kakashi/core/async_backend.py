@@ -40,22 +40,59 @@ class AsyncConfig:
     # Queue settings
     max_queue_size: int = 10000  # Maximum messages in queue before blocking/dropping
     queue_overflow_strategy: str = "block"  # "block", "drop_oldest", "drop_newest"
-    
+
     # Worker thread settings
     worker_count: int = 1  # Number of worker threads
     batch_size: int = 100  # Messages to process in one batch
     batch_timeout: float = 0.1  # Max seconds to wait for batch to fill
-    
+
     # Shutdown settings
     shutdown_timeout: float = 5.0  # Max seconds to wait for graceful shutdown
-    
+
     # Error handling
     max_error_retries: int = 3  # Max retries for failed writes
     error_retry_delay: float = 0.1  # Delay between retries
-    
+
     # Performance tuning
     enable_batching: bool = True  # Enable message batching for efficiency
     thread_name_prefix: str = "AsyncLogger"  # Prefix for worker thread names
+
+    def __post_init__(self) -> None:
+        """Validate configuration parameters."""
+        if self.max_queue_size < 1:
+            raise ValueError(
+                f"max_queue_size must be >= 1, got {self.max_queue_size}"
+            )
+        if self.max_queue_size > 1_000_000:
+            raise ValueError(
+                f"max_queue_size should typically be <= 1000000, got {self.max_queue_size}"
+            )
+        if self.worker_count < 1:
+            raise ValueError(
+                f"worker_count must be >= 1, got {self.worker_count}"
+            )
+        if self.worker_count > 64:
+            raise ValueError(
+                f"worker_count should typically be <= 64, got {self.worker_count}"
+            )
+        if self.batch_size < 1:
+            raise ValueError(
+                f"batch_size must be >= 1, got {self.batch_size}"
+            )
+        if self.batch_timeout <= 0:
+            raise ValueError(
+                f"batch_timeout must be > 0, got {self.batch_timeout}"
+            )
+        if self.shutdown_timeout <= 0:
+            raise ValueError(
+                f"shutdown_timeout must be > 0, got {self.shutdown_timeout}"
+            )
+        valid_strategies = ("block", "drop_oldest", "drop_newest")
+        if self.queue_overflow_strategy not in valid_strategies:
+            raise ValueError(
+                f"queue_overflow_strategy must be one of {valid_strategies}, "
+                f"got {self.queue_overflow_strategy!r}"
+            )
 
 
 class QueueMessage:

@@ -4,6 +4,10 @@ Kakashi - Professional High-Performance Logging Library
 A modern, high-performance logging library designed for production applications
 that require both high throughput and excellent concurrency scaling.
 
+Note: The legacy AsyncLogger (from get_async_logger in this package) is deprecated
+and will be removed in v0.4.0. Use kakashi.core.async_interface.get_async_logger
+for new code. See docs/operations/deprecations.md.
+
 FEATURES:
 - High throughput (56K+ logs/sec) with superior concurrency scaling (1.17x)
 - Thread-safe operation with lock-free hot paths
@@ -36,6 +40,10 @@ USAGE:
 
 # ============================================================================
 # MAIN LOGGER API
+# ============================================================================
+# Note: get_async_logger here is the legacy simple AsyncLogger (kakashi.core.logger).
+# For pipeline-based async with configurable sinks, use kakashi.core.async_interface.get_async_logger.
+# See documentation/docs/operations/deprecations.md for details.
 # ============================================================================
 
 # Main logger classes and entry points
@@ -76,6 +84,9 @@ from .core.interface import (
     configure_colors, enable_bright_colors, disable_colors,
     create_custom_logger, clear_logger_cache
 )
+
+# Functional async interface (for pipeline-based async loggers)
+from .core.async_interface import shutdown_async_backend
 
 # ============================================================================
 # VERSION AND METADATA
@@ -131,7 +142,8 @@ __all__ = [
     "enable_bright_colors",
     "disable_colors",
     "create_custom_logger",
-    
+    "shutdown_async_backend",
+
     # ---- VERSION AND METADATA ----
     "__version__",
     "__author__",
