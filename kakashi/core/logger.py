@@ -374,13 +374,13 @@ def shutdown_async_logging() -> None:
     """Shutdown async logging gracefully."""
     global _async_worker
     if _async_worker and _async_worker.is_alive():
-        # Signal shutdown
-        _async_shutdown.set()
+        # Send shutdown sentinel so the worker can finish processing
         try:
             _async_queue.put_nowait(None)  # Shutdown signal
         except queue.Full:
-            pass
-        
+            # Fall back to blocking put to ensure the sentinel is enqueued
+            _async_queue.put(None)
+
         # Wait for worker to finish (with timeout)
         _async_worker.join(timeout=1.0)
         _async_worker = None
