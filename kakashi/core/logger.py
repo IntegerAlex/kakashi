@@ -255,10 +255,11 @@ class AsyncLogger:
         _ensure_async_worker()
 
     def close(self) -> None:
-        """Flush pending messages and release resources for this logger instance."""
+        """Best-effort flush of pending messages for this logger by waiting briefly."""
         # Draining items belonging to this logger from the queue would require
         # restructuring the shared queue, so we do a best-effort flush by
-        # waiting briefly for the background worker to catch up.
+        # waiting briefly for the background worker to catch up. This does not
+        # guarantee that all enqueued messages have been processed.
         time.sleep(_ASYNC_CLOSE_WAIT_SECS)
     
     def _log_async(self, level: int, message: str, fields: Optional[Dict[str, Any]] = None) -> None:
@@ -309,10 +310,11 @@ class AsyncLogger:
         self._log_async(40, message, fields)
     
     def flush(self) -> None:
-        """Flush pending messages (best effort)."""
-        # For async logger, we can't force immediate flush
-        # but we can yield to allow background processing
-        time.sleep(0.001)
+        """Best-effort, timing-based flush by yielding to the background worker."""
+        # For async logger, we can't force immediate flush, but we can yield
+        # briefly to allow background processing. This does not guarantee that
+        # all pending messages have been processed.
+        time.sleep(_ASYNC_CLOSE_WAIT_SECS)
 
 
 # Lock-free logger cache using thread-local storage
