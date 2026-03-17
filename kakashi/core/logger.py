@@ -12,6 +12,7 @@ FEATURES:
 - Professional, maintainable code structure
 """
 
+import atexit
 import threading
 import time
 import sys
@@ -21,11 +22,21 @@ from typing import Optional, Dict, Any
 # Pre-computed constants for fast access
 _LEVEL_NAMES = {
     10: 'DEBUG',
-    20: 'INFO', 
+    20: 'INFO',
     30: 'WARNING',
     40: 'ERROR',
     50: 'CRITICAL'
 }
+
+# Named log-level constants (use these instead of bare integers)
+LOG_LEVEL_DEBUG = 10
+LOG_LEVEL_INFO = 20
+LOG_LEVEL_WARNING = 30
+LOG_LEVEL_ERROR = 40
+LOG_LEVEL_CRITICAL = 50
+
+# Wait time (seconds) for AsyncLogger.close() best-effort flush
+_ASYNC_CLOSE_WAIT_SECS = 0.05
 
 # Thread-local storage for lock-free operation
 _thread_local = threading.local()
@@ -146,7 +157,7 @@ class Logger:
     
     __slots__ = ('name', 'min_level', 'formatter')
     
-    def __init__(self, name: str, min_level: int = 20):
+    def __init__(self, name: str, min_level: int = LOG_LEVEL_INFO):
         self.name = name
         self.min_level = min_level
         self.formatter = LogFormatter()
@@ -236,12 +247,19 @@ class AsyncLogger:
     - Superior throughput vs sync logging
     """
     
-    def __init__(self, name: str, min_level: int = 20):
+    def __init__(self, name: str, min_level: int = LOG_LEVEL_INFO):
         self.name = name
         self.min_level = min_level
-        
+
         # Ensure async worker is running
         _ensure_async_worker()
+
+    def close(self) -> None:
+        """Flush pending messages and release resources for this logger instance."""
+        # Draining items belonging to this logger from the queue would require
+        # restructuring the shared queue, so we do a best-effort flush by
+        # waiting briefly for the background worker to catch up.
+        time.sleep(_ASYNC_CLOSE_WAIT_SECS)
     
     def _log_async(self, level: int, message: str, fields: Optional[Dict[str, Any]] = None) -> None:
         """True asynchronous logging - non-blocking enqueue."""
@@ -302,7 +320,7 @@ _logger_cache = {}
 _cache_lock = threading.RLock()
 
 
-def get_logger(name: str, min_level: int = 20) -> Logger:
+def get_logger(name: str, min_level: int = LOG_LEVEL_INFO) -> Logger:
     """
     Get a high-performance logger instance with minimal lock contention.
     
@@ -324,7 +342,7 @@ def get_logger(name: str, min_level: int = 20) -> Logger:
         return logger
 
 
-def get_async_logger(name: str, min_level: int = 20) -> AsyncLogger:
+def get_async_logger(name: str, min_level: int = LOG_LEVEL_INFO) -> AsyncLogger:
     """
     Get an asynchronous logger instance with minimal lock contention.
     
@@ -366,3 +384,7 @@ def shutdown_async_logging() -> None:
         # Wait for worker to finish (with timeout)
         _async_worker.join(timeout=1.0)
         _async_worker = None
+
+
+# Ensure buffered async messages are flushed when the interpreter exits
+atexit.register(shutdown_async_logging)

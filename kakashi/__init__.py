@@ -42,7 +42,8 @@ USAGE:
 from .core.logger import (
     Logger, AsyncLogger, LogFormatter,
     get_logger, get_async_logger, clear_logger_cache,
-    shutdown_async_logging
+    shutdown_async_logging,
+    LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR, LOG_LEVEL_CRITICAL,
 )
 
 # ============================================================================
@@ -99,6 +100,13 @@ __all__ = [
     "get_async_logger",  # Async logger entry point
     "clear_logger_cache",
     "shutdown_async_logging",
+
+    # ---- LOG LEVEL CONSTANTS ----
+    "LOG_LEVEL_DEBUG",
+    "LOG_LEVEL_INFO",
+    "LOG_LEVEL_WARNING",
+    "LOG_LEVEL_ERROR",
+    "LOG_LEVEL_CRITICAL",
     
     # ---- CORE DATA STRUCTURES ----
     "LogRecord",
