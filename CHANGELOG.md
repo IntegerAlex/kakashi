@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.2.0] - 2026-03-17
+## [2.2.0] - 
 
 ### Added
 - `LOG_LEVEL_DEBUG`, `LOG_LEVEL_INFO`, `LOG_LEVEL_WARNING`, `LOG_LEVEL_ERROR`, and `LOG_LEVEL_CRITICAL` named constants exported from the top-level package, replacing bare integer literals throughout the API.
