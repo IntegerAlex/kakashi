@@ -43,6 +43,9 @@ _async_queue = queue.Queue(maxsize=10000)
 _async_worker = None
 _async_shutdown = threading.Event()
 
+# Set to True before draining on shutdown so _log_async drops new items
+_async_shutting_down = False
+
 
 class _FlushSignal:
     """Queue item used to signal a synchronous flush barrier."""
@@ -62,58 +65,59 @@ def _async_worker_thread():
     batch_size = 50  # Optimal batch size for throughput/latency balance
 
     while True:
+        batch.clear()
+
         try:
-            # Collect batch
-            batch.clear()
-            timeout = 0.1  # 100ms batch timeout
-            shutdown_requested = False
-            pending_count = 0
+            item = _async_queue.get(timeout=0.1)
+        except queue.Empty:
+            continue
 
+        # Handle the first item from the blocking get
+        if item is None:
+            _async_queue.task_done()
+            break
+
+        if isinstance(item, _FlushSignal):
+            # No prior items in this batch; signal the barrier immediately
+            item.event.set()
+            _async_queue.task_done()
+            continue
+
+        batch.append(item)
+
+        # Collect additional items (non-blocking), stopping at any sentinel
+        flush_signal = None
+        shutdown_requested = False
+        for _ in range(batch_size - 1):
             try:
-                # Get first item (blocking)
-                item = _async_queue.get(timeout=timeout)
-                if item is None:
-                    _async_queue.task_done()
-                    break
-                if isinstance(item, _FlushSignal):
-                    item.event.set()
-                    _async_queue.task_done()
-                    continue
-
-                batch.append(item)
-                pending_count = 1
-
-                # Collect additional items (non-blocking)
-                for _ in range(batch_size - 1):
-                    try:
-                        item = _async_queue.get_nowait()
-                        if item is None:
-                            _async_queue.task_done()
-                            shutdown_requested = True
-                            break
-                        if isinstance(item, _FlushSignal):
-                            item.event.set()
-                            _async_queue.task_done()
-                            continue
-                        batch.append(item)
-                        pending_count += 1
-                    except queue.Empty:
-                        break
-
+                extra = _async_queue.get_nowait()
             except queue.Empty:
-                continue
-
-            # Process batch
-            if batch:
-                _process_async_batch(batch)
-                for _ in range(pending_count):
-                    _async_queue.task_done()
-
-            if shutdown_requested:
                 break
 
-        except Exception:
-            pass  # Ignore errors in background thread
+            if extra is None:
+                shutdown_requested = True
+                break
+            if isinstance(extra, _FlushSignal):
+                # Stop collecting; process prior items before signalling
+                flush_signal = extra
+                break
+            batch.append(extra)
+
+        # Process all collected log items before acknowledging any barrier
+        try:
+            _process_async_batch(batch)
+        finally:
+            for _ in range(len(batch)):
+                _async_queue.task_done()
+
+        # Signal the flush barrier AFTER all preceding messages are written
+        if flush_signal is not None:
+            flush_signal.event.set()
+            _async_queue.task_done()
+
+        if shutdown_requested:
+            _async_queue.task_done()  # for the None sentinel
+            break
 
 
 def _process_async_batch(batch):
@@ -141,8 +145,9 @@ def _process_async_batch(batch):
 
 def _ensure_async_worker():
     """Ensure async worker thread is running."""
-    global _async_worker
+    global _async_worker, _async_shutting_down
     if _async_worker is None or not _async_worker.is_alive():
+        _async_shutting_down = False
         _async_worker = threading.Thread(target=_async_worker_thread, daemon=True)
         _async_worker.start()
 
@@ -290,7 +295,11 @@ class AsyncLogger:
         # Fast level check
         if level < self.min_level:
             return
-        
+
+        # Drop messages once shutdown has started to prevent shutdown deadlock
+        if _async_shutting_down:
+            return
+
         # Non-blocking enqueue to background worker
         try:
             timestamp = time.time()
@@ -396,18 +405,17 @@ def clear_logger_cache() -> None:
 
 
 def shutdown_async_logging() -> None:
-    """Shutdown async logging gracefully."""
-    global _async_worker
+    """Shutdown async logging gracefully, draining all pending messages first."""
+    global _async_worker, _async_shutting_down
     if _async_worker and _async_worker.is_alive():
-        # Ensure all enqueued items are processed before stopping the worker.
+        # Prevent new messages from being enqueued so join() cannot hang
+        _async_shutting_down = True
+
+        # Drain all pre-shutdown items before sending the stop sentinel
         _async_queue.join()
 
-        # Send shutdown sentinel so the worker can finish processing
-        try:
-            _async_queue.put_nowait(None)  # Shutdown signal
-        except queue.Full:
-            # Fall back to blocking put to ensure the sentinel is enqueued
-            _async_queue.put(None)
+        # Send shutdown sentinel so the worker exits its loop
+        _async_queue.put(None)
 
         # Wait for worker to finish (with timeout)
         _async_worker.join(timeout=1.0)

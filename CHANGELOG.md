@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.2] - 2026-03-
+## [0.2.2] - 2026-03-17
 
 ### Added
 - `LOG_LEVEL_DEBUG`, `LOG_LEVEL_INFO`, `LOG_LEVEL_WARNING`, `LOG_LEVEL_ERROR`, and `LOG_LEVEL_CRITICAL` named constants exported from the top-level package, replacing bare integer literals throughout the API.
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `shutdown_async_logging` is now registered with `atexit` so buffered async messages are flushed when the interpreter exits rather than being silently dropped.
 - `shutdown_async_logging()` now drains the queue via a `None` sentinel and waits for the background worker to finish before returning, ensuring pending messages are processed.
-- `AsyncLogger.flush()` and `AsyncLogger.close()` docstrings clarified to accurately describe the best-effort, timing-based nature of the operation.
+- `AsyncLogger.flush()` and `AsyncLogger.close()` now use a deterministic synchronization barrier (`_FlushSignal`) so callers block until all preceding messages are fully written, replacing the previous timing-based best-effort approach.
 - Removed legacy root-level `__init__.py` that shadowed the `kakashi/` package in editable installs.
 - Removed `setup.py`; `pyproject.toml` is now the single canonical build configuration.
 
