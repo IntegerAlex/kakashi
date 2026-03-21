@@ -95,6 +95,10 @@ __author__ = "Kakashi Development Team"
 __description__ = "Professional High-Performance Logging Library"
 __url__ = "https://github.com/kakashi/logging"
 
+# Backward-compatible aliases for callers using `kakashi.version`/`kakashi.author`.
+version = __version__
+author = __author__
+
 # ============================================================================
 # MAIN EXPORTS
 # ============================================================================
@@ -151,6 +155,8 @@ __all__ = [
     # ---- VERSION AND METADATA ----
     "__version__",
     "__author__",
+    "version",
+    "author",
     "__description__",
     "__url__",
 ]
