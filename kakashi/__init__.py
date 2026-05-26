@@ -90,7 +90,7 @@ from .core.interface import (
 # VERSION AND METADATA
 # ============================================================================
 
-__version__ = "2.0.0"
+__version__ = "0.2.2"
 __author__ = "Kakashi Development Team"
 __description__ = "Professional High-Performance Logging Library"
 __url__ = "https://github.com/kakashi/logging"
