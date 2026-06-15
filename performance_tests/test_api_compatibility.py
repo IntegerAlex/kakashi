@@ -11,6 +11,7 @@ import traceback
 from pathlib import Path
 from typing import Any
 import tempfile
+import threading
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -240,3 +241,54 @@ class TestErrorHandling:
         
         # If we get here without errors, concurrent access works
         assert True
+
+
+class TestAsyncFlushRegression:
+    """Regression coverage for AsyncLogger.flush synchronization semantics."""
+
+    def test_async_flush_waits_for_worker_processing(self, monkeypatch):
+        """
+        Ensure flush is synchronization-based, not timing-based.
+
+        The worker is deliberately blocked while processing a batch. flush()
+        must block until processing is released.
+        """
+        from kakashi import get_async_logger, shutdown_async_logging
+        import kakashi.core.logger as core_logger
+
+        original_process = core_logger._process_async_batch
+        processing_started = threading.Event()
+        release_processing = threading.Event()
+        flush_finished = threading.Event()
+
+        def blocking_process(batch):
+            processing_started.set()
+            # If flush is truly synchronized with queue processing, it will
+            # remain blocked until this event is released.
+            release_processing.wait(timeout=2.0)
+            original_process(batch)
+
+        monkeypatch.setattr(core_logger, "_process_async_batch", blocking_process)
+
+        logger = get_async_logger("test_async_flush_regression")
+        logger.info("must be processed before flush returns")
+
+        # If flush regresses to a fixed sleep, this worker blocking won't matter.
+        flush_thread = threading.Thread(
+            target=lambda: (logger.flush(), flush_finished.set()),
+            daemon=True,
+        )
+        flush_thread.start()
+
+        assert processing_started.wait(timeout=1.0), "Worker never started processing"
+        assert not flush_finished.wait(timeout=0.05), (
+            "flush() returned before queued work finished; likely timing-based regression"
+        )
+
+        release_processing.set()
+        flush_thread.join(timeout=1.0)
+        assert not flush_thread.is_alive(), "flush() did not finish after worker was released"
+        assert flush_finished.is_set(), "flush() did not complete successfully"
+
+        # Keep test isolation strong for following tests.
+        shutdown_async_logging()

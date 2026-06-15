@@ -40,9 +40,18 @@ USAGE:
 
 # Main logger classes and entry points
 from .core.logger import (
-    Logger, AsyncLogger, LogFormatter,
-    get_logger, get_async_logger, clear_logger_cache,
-    shutdown_async_logging
+    Logger,
+    AsyncLogger,
+    LogFormatter,
+    get_logger,
+    get_async_logger,
+    clear_logger_cache,
+    shutdown_async_logging,
+    LOG_LEVEL_DEBUG,
+    LOG_LEVEL_INFO,
+    LOG_LEVEL_WARNING,
+    LOG_LEVEL_ERROR,
+    LOG_LEVEL_CRITICAL,
 )
 
 # ============================================================================
@@ -81,10 +90,14 @@ from .core.interface import (
 # VERSION AND METADATA
 # ============================================================================
 
-__version__ = "2.0.0"
+__version__ = "0.2.2"
 __author__ = "Kakashi Development Team"
 __description__ = "Professional High-Performance Logging Library"
 __url__ = "https://github.com/kakashi/logging"
+
+# Backward-compatible aliases for callers using `kakashi.version`/`kakashi.author`.
+version = __version__
+author = __author__
 
 # ============================================================================
 # MAIN EXPORTS
@@ -99,6 +112,13 @@ __all__ = [
     "get_async_logger",  # Async logger entry point
     "clear_logger_cache",
     "shutdown_async_logging",
+
+    # ---- LOG LEVEL CONSTANTS ----
+    "LOG_LEVEL_DEBUG",
+    "LOG_LEVEL_INFO",
+    "LOG_LEVEL_WARNING",
+    "LOG_LEVEL_ERROR",
+    "LOG_LEVEL_CRITICAL",
     
     # ---- CORE DATA STRUCTURES ----
     "LogRecord",
@@ -135,6 +155,8 @@ __all__ = [
     # ---- VERSION AND METADATA ----
     "__version__",
     "__author__",
+    "version",
+    "author",
     "__description__",
     "__url__",
 ]
