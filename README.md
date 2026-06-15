@@ -24,8 +24,8 @@ A modern, high-performance logging library designed for production applications 
 
 | Metric | Target | Status |
 |--------|--------|--------|
-| **Throughput** | 60,000+ logs/sec | ✅ EXCEEDED (66,116 logs/sec) |
-| **Concurrency Scaling** | 0.65x+ | ✅ EXCEEDED (1.17x scaling) |
+| **Throughput** | 60,000+ logs/sec | ✅ EXCEEDED (852,153 logs/sec) |
+| **Concurrency Scaling** | 0.65x+ | ✅ EXCEEDED (1.13x scaling) |
 | **Memory Usage** | <0.02MB | ✅ Maintained |
 | **Structured Overhead** | <10% | ✅ Maintained |
 
@@ -33,21 +33,24 @@ A modern, high-performance logging library designed for production applications 
 
 **⚠️ LEGAL DISCLAIMER**: The following benchmark results are provided for informational purposes only. Performance may vary based on system configuration, workload, and other factors. These results are not guarantees of performance and should not be used for commercial claims or comparisons without independent verification. Kakashi makes no warranties regarding performance characteristics.
 
+*Re-benchmarked 2026-06-15 on Python 3.12.3, Linux 6.17, 16-core CPU.*
+
 ### Performance Comparison vs Industry Standards
 
 | Library | Throughput (logs/sec) | Concurrency Scaling | Async Throughput | Notes |
 |---------|----------------------|-------------------|------------------|-------|
-| **Kakashi (Current)** | 56,310 | **1.17x** | 169,074 | **SUPERIOR** performance |
-| **Standard Library** | 18,159 | 0.59x | N/A | Python built-in |
-| **Structlog** | 12,181 | 0.47x | N/A | Production ready |
-| **Loguru** | 14,690 | 0.46x | N/A | Feature rich |
+| **Kakashi v0.2.2** | **852,153** | **1.13x** | **407,361** | SUPERIOR performance |
+| Standard Library | 198,122 | 0.43x | N/A | Python built-in |
+| Structlog | 203,592 | 0.20x | N/A | Production ready |
+| Loguru | 116,966 | 0.25x | N/A | Feature rich |
 
 ### Performance Analysis
 
-- **Single-threaded Performance**: Kakashi achieves **3.1x** better throughput than standard library
-- **Concurrency Scaling**: **1.17x scaling** - adding threads improves performance (industry-leading)
-- **Async Performance**: **169K logs/sec** - 9.3x faster than standard library
-- **Memory Efficiency**: Maintains low memory footprint across all scenarios
+- **Single-threaded**: **4.3x** faster than standard library
+- **Concurrency scaling**: **11.3x** faster than standard library under 16-thread contention
+- **Only library with >1x scaling**: all competitors degrade significantly under concurrency
+- **Async throughput**: **407K logs/sec** non-blocking enqueue
+- **Memory efficiency**: Maintains low memory footprint across all scenarios
 
 **Note**: These benchmarks were run on a development system and may not reflect production performance. Always test in your specific environment.
 
@@ -262,4 +265,4 @@ This project is licensed under the GNU Lesser General Public License v2.1 (LGPL-
 
 ---
 
-**Kakashi v0.2.0** - Professional High-Performance Logging for Python
+**Kakashi v0.2.2** - Professional High-Performance Logging for Python

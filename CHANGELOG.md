@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AsyncLogger.flush()` and `AsyncLogger.close()` now use a deterministic synchronization barrier (`_FlushSignal`) so callers block until all preceding messages are fully written, replacing the previous timing-based best-effort approach.
 - Removed legacy root-level `__init__.py` that shadowed the `kakashi/` package in editable installs.
 - Removed `setup.py`; `pyproject.toml` is now the single canonical build configuration.
+- Re-benchmarked: 852K logs/sec single-thread, 964K logs/sec concurrent (16 threads), 407K logs/sec async (Python 3.12.3, 16-core).
 
 ### Fixed
 - README license text corrected from MIT to LGPL-2.1, matching the `LICENSE` file and packaging metadata.
